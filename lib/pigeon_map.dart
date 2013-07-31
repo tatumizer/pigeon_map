@@ -12,16 +12,17 @@ class NameSet {
   NameSet(List<String> names) {
     _names=new List<String>.from(names, growable: false);
     _names.sort((a, b) => a.compareTo(b));
-    if (new HashSet<String>.from(_names).length != _names.length) throw new ArgumentError("repeating names in the list");
+    var len = _names.length;
+    if (new HashSet<String>.from(_names).length != len) throw new ArgumentError("repeating names in the list");
     var hashCodes=new List<int>.from(_names.map((key) => key.hashCode));
     // check uniqueness of hash codes
-    if (new HashSet<int>.from(hashCodes).length != _names.length) return;
+    if (new HashSet<int>.from(hashCodes).length != len) return;
 
     var pair =[[16, 256], [22, 512], [32, 1024], [45, 2048], [64, 4096]]
-        .firstWhere((p)=>_names.length<=p[0], orElse:()=>null);
+        .firstWhere((p)=> len <= p[0], orElse:()=>null);
     if (pair == null) throw new ArgumentError("pigeon map of this size not supported");
     if (!_tuneUp(hashCodes, pair[1])) {
-      _searchMode = _BINARY;
+      _searchMode = len < 10 ? _LINEAR : _BINARY;
       _table = null;
     }
   }
@@ -33,7 +34,7 @@ class NameSet {
   // mapping overall is ~1/10000 (found experimentally)
   bool _tuneUp(hashCodes, tableSize) {
     for (int i = 0; i <= 1 && tableSize <= 4096; i++, tableSize*= 2) {
-       _table = _table = new Int8List(tableSize);
+       _table = new Int8List(tableSize);
        for (_shift = 0; _shift < 16; _shift++) {
          if (_initTable(hashCodes))
            return true;
@@ -55,8 +56,8 @@ class NameSet {
     int n = _searchMode == _HASH ? _table[(key.hashCode >> _shift)&(_table.length-1)] :
             _searchMode == _LINEAR ? _getIndexByLinearSearch(key) :
             _getIndexByBinarySearch(key);  
-    // for _HASH method, we need to compare key, for others - already compared        
-    return n>=0 && (_searchMode != _HASH ||_names[n] == key) ? n : 
+    // fast track for identical makes things faster in typical case        
+    return n>=0 && (identical(_names[n], key) || _names[n] == key) ? n : 
       failIfAbsent? throw new ArgumentError("undeclared attribute name $key") : -1;
   }
   int _getIndexByBinarySearch(String key) {
@@ -98,9 +99,8 @@ class PigeonMap implements Map<String, dynamic> {
   operator []=(String k, dynamic v) {
     //_guarded.length >0 && _checkGuarded();
     int n = _nameSet._getIndex(k, true);
-    var old = _values[n];
+    if (identical(_values[n], _undefined)) _length++;
     _values[n] = v;
-    if (identical(old, _undefined)) _length++;
   }
 
   operator [](String k) {
@@ -169,7 +169,8 @@ class PigeonMap implements Map<String, dynamic> {
     if (n<0 || identical(_values[n], _undefined)) return null;
     var old = _values[n];
     _values[n] = _undefined;
-    if (!identical(old, _undefined)) _length--;
+    if (identical(old, _undefined)) return null;
+    _length--;
     return old;
     
   }

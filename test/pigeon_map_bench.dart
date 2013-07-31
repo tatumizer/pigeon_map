@@ -95,25 +95,25 @@ main() {
   run(testEmptyLoop, "Warmup", 0, 0, 0);
   
   print("reusing old map (calling clear before each iteration):");
-  run (testMapWriteRead,"MapWriteRead(Perfect)", 8, 16, true);  
+  run (testMapWriteRead,"MapWriteRead(Pigeon)", 8, 16, true);  
   run (testMapWriteRead,"MapWriteRead(Native)", 8, 16, false);  
-  run (testMapWriteRead,"MapWriteRead(Perfect)", 16, 8, true);  
+  run (testMapWriteRead,"MapWriteRead(Pigeon)", 16, 8, true);  
   run (testMapWriteRead,"MapWriteRead(Native)", 16, 8, false);  
-  run (testMapWriteRead,"MapWriteRead(Perfect)", 16, 16, true);  
+  run (testMapWriteRead,"MapWriteRead(Pigeon)", 16, 16, true);  
   run (testMapWriteRead,"MapWriteRead(Native)", 16, 16, false);  
-  run (testMapWriteRead,"MapWriteRead(Perfect)", 32, 16, true);  
+  run (testMapWriteRead,"MapWriteRead(Pigeon)", 32, 16, true);  
   run (testMapWriteRead,"MapWriteRead(Native)", 32, 16, false);  
 
-  print("no map reuse (calling new before each iteration):");
-  run (testNewMapWriteRead,"NewMapWriteRead(Perfect)", 8, 16, true);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 8, 16, false);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Perfect)", 16, 8, true);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 8, false);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Perfect)", 16, 16, true);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 16, false);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Perfect)", 32, 16, true);  
-  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 32, 16, false);  
-  
+//  print("no map reuse (calling new before each iteration):");
+//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 8, 16, true);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 8, 16, false);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 8, true);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 8, false);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 16, true);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 16, false);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 32, 16, true);  
+//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 32, 16, false);  
+//  
 //  // once we are at it, test how native map behaves by itself on larger key sets
 //  print("testing native map only on larger values");
 //  run (testMapWriteRead,"MapWriteRead(Native)", 64, 16, false);  
@@ -122,10 +122,10 @@ main() {
 //  print("testing cutoff for linear/binary/hash modes");
 //  for (searchMode=1; searchMode<=2; searchMode++) {
 //    for (int n=2; n<=14; n++) {
-//      run (testMapWriteRead,"MapWriteRead(Perfect)", n, 16, true); 
+//      run (testMapWriteRead,"MapWriteRead(Pigeon)", n, 16, true); 
 //      run (testMapWriteRead,"MapWriteRead(Native)", n, 16, false);  
 //    }
-//    run (testMapWriteRead,"MapWriteRead(Perfect)", 64, 16, true);  
+//    run (testMapWriteRead,"MapWriteRead(Pigeon)", 64, 16, true);  
 //    run (testMapWriteRead,"MapWriteRead(Native)", 64, 16, false);  
 //  }
   
