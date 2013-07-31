@@ -1,5 +1,5 @@
 name: pigeon_map
-version: 0.1.003
+version: 0.1.004
 author: tatumizer <tatumizer@gmail.com>
 description: Implementation of Map for the case when keys are known in advance
 homepage: https://github.com/tatumizer/pigeon_map

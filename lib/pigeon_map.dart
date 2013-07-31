@@ -20,7 +20,7 @@ class NameSet {
 
     var pair =[[16, 256], [22, 512], [32, 1024], [45, 2048], [64, 4096]]
         .firstWhere((p)=> len <= p[0], orElse:()=>null);
-    if (pair == null) throw new ArgumentError("pigeon map of this size not supported");
+    if (pair == null) throw new ArgumentError("pigeon map of this size ($len) not supported");
     if (!_tuneUp(hashCodes, pair[1])) {
       _searchMode = len < 10 ? _LINEAR : _BINARY;
       _table = null;
@@ -52,13 +52,12 @@ class NameSet {
     }
     return true;
   }
-  int _getIndex(String key, bool failIfAbsent) {
+  int _getIndex(String key) {
     int n = _searchMode == _HASH ? _table[(key.hashCode >> _shift)&(_table.length-1)] :
             _searchMode == _LINEAR ? _getIndexByLinearSearch(key) :
             _getIndexByBinarySearch(key);  
     // fast track for identical makes things faster in typical case        
-    return n>=0 && (identical(_names[n], key) || _names[n] == key) ? n : 
-      failIfAbsent? throw new ArgumentError("undeclared attribute name $key") : -1;
+    return n>=0 && (identical(_names[n], key) || _names[n] == key) ? n : -1;
   }
   int _getIndexByBinarySearch(String key) {
       int lo = 0;
@@ -94,23 +93,25 @@ class PigeonMap implements Map<String, dynamic> {
   PigeonMap(this._nameSet) {
     _values = new List.filled(_nameSet.length, _undefined);
   }
-
+  _keyError(key) => throw new ArgumentError("name '$key' is not in the NameSet");
   //_checkGuarded() => _guarded.contains(this) ? throw new ConcurrentModificationError(this) : 0;
-  operator []=(String k, dynamic v) {
+  operator []=(String key, dynamic v) {
     //_guarded.length >0 && _checkGuarded();
-    int n = _nameSet._getIndex(k, true);
+    int n = _nameSet._getIndex(key);
+    if (n<0) _keyError(key);
     if (identical(_values[n], _undefined)) _length++;
     _values[n] = v;
   }
 
-  operator [](String k) {
-    int n = _nameSet._getIndex(k, true);
+  operator [](String key) {
+    int n = _nameSet._getIndex(key);
+    if (n<0) _keyError(key);
     var v = _values[n];
     return identical(v, _undefined) ? null :v;
   }
 
-  bool containsKey(String k) {
-    int n = _nameSet._getIndex(k, false);
+  bool containsKey(String key) {
+    int n = _nameSet._getIndex(key);
     return n>=0 && !identical(_values[n], _undefined);
   }
 
@@ -151,7 +152,8 @@ class PigeonMap implements Map<String, dynamic> {
   bool get isFast => _nameSet.isFast;
   putIfAbsent(String key, dynamic ifAbsent()) {
     //_guarded.length >0 && _checkGuarded();
-    int n = _nameSet._getIndex(key, true);
+    int n = _nameSet._getIndex(key);
+    if (n<0) _keyError(key);
     var old=_values[n];
     if (identical(old, _undefined)) {
       //_guarded.add(this);
@@ -166,7 +168,7 @@ class PigeonMap implements Map<String, dynamic> {
 
   dynamic remove(String key) {
     //_guarded.length >0 && _checkGuarded();
-    int n = _nameSet._getIndex(key, false);
+    int n = _nameSet._getIndex(key);
     if (n<0 || identical(_values[n], _undefined)) return null;
     var old = _values[n];
     _values[n] = _undefined;
