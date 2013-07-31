@@ -159,6 +159,7 @@ class PigeonMap implements Map<String, dynamic> {
       _values[n] = ifAbsent();
       _length++;
       //_guarded.removeLast();
+      return null;
     }
     return old;
   }
