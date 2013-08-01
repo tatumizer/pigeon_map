@@ -64,7 +64,7 @@ class NameSet {
       int hi = _names.length - 1;
       if (hi < 0) return -1;
       while (lo <= hi) {
-        // Key is in a[lo..hi] or not present.
+        // Key, if present, is in [lo..hi]
         int mid = lo + ((hi - lo) >> 1);
         int comp = key.compareTo(_names[mid]);
         if      (comp <0) hi = mid - 1;

@@ -43,8 +43,7 @@ If not, algo switches into slow mode (binary search).
 
 Now let's consider an abstract problem. We have an array of N unique 31-bit numbers h[i], and we want to find a function f such as
 f(h[i]) produces unique (!) values in the range, say, 0..255. Obvious way to do that is just to take 8 bits 0..7 from each h[i].
-If they are unqiue, we are done. If not, we try bits 1..8, then 2..9 etc - after a number of attempts, we have a good chance to succeed.
-I found experimentally that the chance of NOT finding a mapping is about 1/10000.
+If they are unqiue, we are done. If not, we try bits 1..8, then 2..9 etc - after a number of attempts, we have a good chance to succeed (see below)
 
 Now that we have unique small hashCodes, the task is trivial.
 
@@ -57,8 +56,13 @@ table[0x15]=0; table[0xFE]=1; table[0x2A]=2
 which is what we tried to achieve.
 
 In general, the size of the table should be approximately a square of the number of names in the set (see wikipedia). (Consequently, bit size of small hash map is a
-log2 of table size). During initialization, NameSet counts names, takes a square of this count, rounds up to nearest power of 2  - this is the table size.
+log2 of table size). During initialization, NameSet counts names, takes a square of this count, rounds up to nearest power of 2  - this is the table size. I found experimentally that with this choice of table size, 
+the chance of NOT finding a mapping is about 1/10000.
 
+One notable property of PigeonMaps is that the keys in NameSet and keys used for *reading* data are normally constant strings.
+For constant strings, expenses for hashCode calculations are essentially zero, and comparison for equality is satisfied by identity check.
+Since hashCode and equality is all that's needed here, and collisions are prevented, finding a slot for value bois down to shift and mask in typical case.
+(Please refer to the source code for details, otherwise it sounds cryptic)
 
 Limitations
 ===========
