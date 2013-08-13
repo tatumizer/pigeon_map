@@ -84,8 +84,6 @@ class NameSet {
 
 class PigeonMap implements Map<String, dynamic> {
   static final _undefined = new Object();
-  // for now, I comment out concurrent modification guards everywhere.
-  // static final _guarded = new List<PigeonMap>();
   NameSet _nameSet;
   int _length = 0;
   List _values;
@@ -94,9 +92,7 @@ class PigeonMap implements Map<String, dynamic> {
     _values = new List.filled(_nameSet.length, _undefined);
   }
   _keyError(key) => throw new ArgumentError("name '$key' is not in the NameSet");
-  //_checkGuarded() => _guarded.contains(this) ? throw new ConcurrentModificationError(this) : 0;
   operator []=(String key, dynamic v) {
-    //_guarded.length >0 && _checkGuarded();
     int n = _nameSet._getIndex(key);
     if (n<0) _keyError(key);
     if (identical(_values[n], _undefined)) _length++;
@@ -118,7 +114,6 @@ class PigeonMap implements Map<String, dynamic> {
   void addAll(Map<String, dynamic> other) => other.forEach((k, v) => this[k] = v);
   
   void clear() {
-    //_guarded.length >0 && _checkGuarded();
     _values.fillRange(0, _values.length, _undefined);
     _length = 0;
   }
@@ -129,45 +124,37 @@ class PigeonMap implements Map<String, dynamic> {
   }
 
   void forEach(void f(String key, dynamic value)) {
-   // _guarded.length >0 && _checkGuarded();
-   // _guarded.add(this);
-   // try/catch needed if I want to support guards 
-     for (int i = 0; i < _values.length; i++) {
-       var v = _values[i];
-       if (!identical(v, _undefined)) f(_nameSet._names[i], v);
-     }
-   // _guarded.removeLast();
+     Maps.forEach(this, f);
   }
 
   bool get isEmpty => _length == 0;
   
   bool get isNotEmpty => _length != 0;
-  
+  // we have to use strange algo to detect concurrent modification
   Iterable<String> get keys { 
-    int i = 0;
-    return _nameSet._names.where((k)=>!identical(_values[i++], _undefined)); 
+    int i = -1;
+    var names=_nameSet._names;
+    return _values.map((v) { 
+      i++; 
+      return identical(v, _undefined) ? null : names[i]; 
+    }).where((k) => k!=null);
   }
   
   int get length => _length;
   bool get isFast => _nameSet.isFast;
   putIfAbsent(String key, dynamic ifAbsent()) {
-    //_guarded.length >0 && _checkGuarded();
     int n = _nameSet._getIndex(key);
     if (n<0) _keyError(key);
     var old=_values[n];
     if (identical(old, _undefined)) {
-      //_guarded.add(this);
-      // try/catch needed to support guards
       _values[n] = ifAbsent();
       _length++;
-      //_guarded.removeLast();
       return null;
     }
     return old;
   }
 
   dynamic remove(String key) {
-    //_guarded.length >0 && _checkGuarded();
     int n = _nameSet._getIndex(key);
     if (n<0 || identical(_values[n], _undefined)) return null;
     var old = _values[n];
@@ -179,7 +166,7 @@ class PigeonMap implements Map<String, dynamic> {
   }
   
   String toString() {
-    return new HashMap.from(this).toString();
+    return Maps.mapToString(this);
   }
 
   Iterable get values => _values.where((v) => !identical(v, _undefined));

@@ -3,7 +3,6 @@
 // less dramatically so).
 
 import "../lib/pigeon_map.dart";
-import "dart:typed_data";
 import "dart:math";
 
 String getRandomString(int len) {
