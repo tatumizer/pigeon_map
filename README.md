@@ -1,11 +1,48 @@
 Overview
 ========
+Pigeon library provides implementation of memory- and performance-efficient map-backed data structures. These structures are efficiently serializable with  no extra 
+bolierplate. Serialization doesn't rely on reflection and withstands dart2javascript conversion and minification.
+
+Library consists of the following components:
+
+1. pigeon map: something that looks like a map, but stores values in array of slots (much more efficient than standard map memory/performance-wise
+2. pigeon struct - inherits pigeon map, but adds getters/setters for attributes so it looks like a normal class. In other words, pigeon struct is something that looks 
+like a struct and a map at the same time. 
+3. various serializers/deserializers (JSON and Pigeonson are supported in this version)
+4. generator of pigeon structs. Very simple one. All it does is this: you write
+
+```javascript
+@Prototype
+class Person {
+  String firstName;
+  String lastName;
+  int yearOfBirth;
+}
+```
+
+and program generates something like this:
+
+```javascript
+class Person extends PigeonStruct {
+  Person() {/*...*/} 
+  String get firstName => _getValue(0);
+  void set firstName(val) => _setValue(0,val);
+  String get lastName => _getValue(1);
+  void set lastName(val) => _setValue(1,val);
+  int get yearOfBirth => _getValue(2);
+  void set yearOfBirth(val) => _setValue(2,val);
+}
+```
+
+Pigeon Map
+==========
 
 Pigeon map is an implementation of standard Map interface for the case of attribute names known in advance.
 E.g. if you are going to produce a lot of maps with just 3 attributes: "foo", "bar" and "baz",
 you do the following:
 
 ```javascript
+
 var nameSet = new NameSet(["foo", "bar", "baz"]);
 var list = [];
 for (int i=0; i<=1000; i++) { 
@@ -64,26 +101,76 @@ For constant strings, expenses for hashCode calculations are essentially zero, a
 Since hashCode and equality is all that's needed here, and collisions are prevented, finding a slot for value bois down to shift and mask in typical case.
 (Please refer to the source code for details, otherwise it sounds cryptic)
 
-Limitations
-===========
-
-PigeonMap supports up to 64 keys for NameSet. It's enough for most practical purposes. You can have as many NameSets as you wish. 
+NOTE: PigeonMap supports up to 64 keys for NameSet. It's enough for most practical purposes. You can have as many NameSets as you wish. 
 
 Use cases
 =========
 
-PigeonMaps are good for keeping arrays of ad-hoc structures which otherwise would require code generation.
 Example: you execute sql statement
 select foo, bar, baz, name, address from customer;
 
 Database driver has to return result set somehow (it can be large!)
 PigeonMap is a solution: create (automatically, by parsing "select" statement or retrieving ResultSetMetadata) name set containing 5 attributes (foo, bar, baz, name, address) and return array of PigeonMaps - they are memory/performance efficient.
+The main benefit of using PigeonMaps instead of regular maps: they use significantly less memory.
 
-Similar problem occurs while parsing JSONs and in general, in every serialization/deserialization problem.
+Other use cases involve PigeonStructs.
 
-Because of memory/performance efficiency, pigeon maps can be good also as universal intermadiate format even if you have structs defined in dart - that is, instead of converting
-JSON -> dart object directly (which can be messy), convert JSON -> pigeon map and call method that does second step (Pigeon map -> dart object)
-That way, we can have N serialization formats and M deserialization formats without the need to write M*N special adapters.
+Pigeon Struct
+=============
 
-There can be other uses, will cover later.
+PigeonStruct is extention of PigeonMap that provides getters/setters for attributes, so it looks like a hibrid between map and struct. Good for value objects, 
+DAO, DTO (those terms mean more or less the same).
+
+Code generation is simple: create a file containing prototypes of your data structures, and main function that calls "generate":
+
+```javascript
+// file proto_structs.dart
+import 'pigeon.dart';
+@Prototype
+class Person {
+  String firstName;
+  String lastName;
+  int yearOfBirth;
+}
+// other @Prototype classes
+main() {
+  generate("structs.dart");
+}
+```
+
+Press CTRL/R to run it - generator will scan the file and generate another file here all @Prototypes are replaced by generated code. You file otherise may contain
+any code you like - it will be copied into generated file as is (only @Prototypes get replaced)
+(Alternatiively, you can include generation logic in build.dart)
+
+Since generated object inherits from PigeonMap, all properties of PigeonMap hold.
+
+NOTE: program also generates small amount of metadata for mapping of struct keys to their types. Since keys are the same as attribute names, program uses another 
+PigeonMap to efficiently store metadata.
+
+JSON Serialization
+==================
+
+Since PigeonStruct is map-backed, all serializers that normally work for maps will be able to work with PigeonMaps and PigeonStructs.
+For deserialization, there's additional problem of creating correct PigeonStruct types (e.g. object of type Person while deserializing encoded Person).
+Currently implementation supports JSON serialization both ways without any extra boilerplate. Program currently supports the following data types defined
+recursively:
+
+- primitive types (int, double, bool, String) are supported
+
+- if T - supported type, then List<T> and Map<String,T> are supported types
+
+- class extending PigeonStruct is supported if all its attribute types are suported.
+
+NOTE: support for typed_data will be added in the future.
  
+To get JSON string, simply call toJsonString() method of any PigeonStruct. To parse JSON string, call `new Person.fromJsonString(str)`.
+Performance of JSON toJsonString/fromJSONString is the same as for default JSON library, but you get typed structures for the same money.
+(The reason why PigeonMaps are not faster for JSON is this: 95% of time is spent in parsing proper, not in map read/write) 
+  
+Binary serialization
+====================
+
+There's very fast binary serializer that works out of box, but it's not complete yet. 
+(To be continued)
+
+  

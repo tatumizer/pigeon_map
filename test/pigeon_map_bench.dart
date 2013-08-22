@@ -2,7 +2,7 @@
 // and native map. However, the ratio of timings would obviously be different if each had to compute hash code (pigeon will still be faster, but
 // less dramatically so).
 
-import "../lib/pigeon_map.dart";
+import "../lib/pigeon.dart";
 import "dart:math";
 
 String getRandomString(int len) {
@@ -103,15 +103,15 @@ main() {
   run (testMapWriteRead,"MapWriteRead(Pigeon)", 32, 16, true);  
   run (testMapWriteRead,"MapWriteRead(Native)", 32, 16, false);  
 
-//  print("no map reuse (calling new before each iteration):");
-//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 8, 16, true);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 8, 16, false);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 8, true);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 8, false);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 16, true);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 16, false);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 32, 16, true);  
-//  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 32, 16, false);  
+  print("no map reuse (calling new before each iteration):");
+  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 8, 16, true);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 8, 16, false);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 8, true);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 8, false);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 16, 16, true);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 16, 16, false);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Pigeon)", 32, 16, true);  
+  run (testNewMapWriteRead,"NewMapWriteRead(Native)", 32, 16, false);   
 //  
 //  // once we are at it, test how native map behaves by itself on larger key sets
 //  print("testing native map only on larger values");

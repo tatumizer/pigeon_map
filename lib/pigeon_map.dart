@@ -1,6 +1,5 @@
-library pigeon_map;
-import "dart:collection";
-import "dart:typed_data";
+part of pigeon;
+
 
 class NameSet {
   static const int _LINEAR = 0, _BINARY = 1, _HASH = 2;
@@ -85,18 +84,19 @@ class NameSet {
 class PigeonMap implements Map<String, dynamic> {
   static final _undefined = new Object();
   NameSet _nameSet;
-  int _length = 0;
+  int _length = -1;
   List _values;
 
   PigeonMap(this._nameSet) {
     _values = new List.filled(_nameSet.length, _undefined);
   }
   _keyError(key) => throw new ArgumentError("name '$key' is not in the NameSet");
+  get nameSet => _nameSet;
   operator []=(String key, dynamic v) {
     int n = _nameSet._getIndex(key);
     if (n<0) _keyError(key);
-    if (identical(_values[n], _undefined)) _length++;
     _values[n] = v;
+    _length=-1;
   }
 
   operator [](String key) {
@@ -115,7 +115,7 @@ class PigeonMap implements Map<String, dynamic> {
   
   void clear() {
     _values.fillRange(0, _values.length, _undefined);
-    _length = 0;
+    _length = -1;
   }
   
 
@@ -124,23 +124,34 @@ class PigeonMap implements Map<String, dynamic> {
   }
 
   void forEach(void f(String key, dynamic value)) {
-     Maps.forEach(this, f);
+    var names=_nameSet._names;
+    for (int i=0; i<_values.length; i++) {
+      if (!identical(_values[i], _undefined))
+        f(names[i],_values[i]);
+    }    
   }
 
-  bool get isEmpty => _length == 0;
+  bool get isEmpty => length == 0;
   
-  bool get isNotEmpty => _length != 0;
-  // we have to use strange algo to detect concurrent modification
+  bool get isNotEmpty => length != 0;
   Iterable<String> get keys { 
-    int i = -1;
+    var filtered = <String>[];
     var names=_nameSet._names;
-    return _values.map((v) { 
-      i++; 
-      return identical(v, _undefined) ? null : names[i]; 
-    }).where((k) => k!=null);
+    for (int i=0; i<_values.length; i++) {
+      if (!identical(_values[i], _undefined))
+        filtered.add(names[i]);
+    }   
+    return filtered;
   }
   
-  int get length => _length;
+  int get length { 
+    if (_length>=0)
+      return _length;
+    _length=0;
+    for (int i=0; i<_values.length; i++)
+      _length+= identical(_values[i], _undefined)? 0:1;
+    return _length;
+  }
   bool get isFast => _nameSet.isFast;
   putIfAbsent(String key, dynamic ifAbsent()) {
     int n = _nameSet._getIndex(key);
@@ -148,7 +159,7 @@ class PigeonMap implements Map<String, dynamic> {
     var old=_values[n];
     if (identical(old, _undefined)) {
       _values[n] = ifAbsent();
-      _length++;
+      _length=-1;
       return null;
     }
     return old;
@@ -159,8 +170,8 @@ class PigeonMap implements Map<String, dynamic> {
     if (n<0 || identical(_values[n], _undefined)) return null;
     var old = _values[n];
     _values[n] = _undefined;
+    _length=-1;
     if (identical(old, _undefined)) return null;
-    _length--;
     return old;
     
   }
