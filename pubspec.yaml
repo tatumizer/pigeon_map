@@ -1,5 +1,5 @@
 name: pigeon_map
-version: 0.2.001
+version: 0.2.002
 author: tatumizer <tatumizer@gmail.com>
 description: efficient Map and Map-backed struct, with fast serializers
 homepage: https://github.com/tatumizer/pigeon_map

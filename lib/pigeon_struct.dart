@@ -28,11 +28,10 @@ class PigeonStructMetadata extends NameSet {
     for (var t in slotTypes.values) {
       int q = _getTypeId(t);
       var leafType = _getLeafType(t);
-      var hasPigeonLeaf=_getTypeId(leafType)==_PIGEON;
-      all.add(hasPigeonLeaf? -q: q);
       // we have to strip down generic type to check whether if the leaf is a pigeon
-      if (hasPigeonLeaf)
-        all.add(leafType);
+      var hasPigeonLeaf=_getTypeId(leafType)==_PIGEON;
+      all.add(q);
+      all.add(hasPigeonLeaf? leafType: null);
     }
   }
   _getLeafType(t) {
@@ -51,7 +50,7 @@ class PigeonStructMetadata extends NameSet {
     if (t=="int") return _INT;
     else if (t=="bool") return _BOOL;
     else if (t=="double") return _DOUBLE;
-    else if (t=="String") return _STRING;
+    else if (t=="String") return _STRING1;
     else if (t=="List<int>") return _LIST_INT;
     else if (t=="List<String>") return _LIST_STRING;
     else if (t.startsWith("List<")) return _extractGeneric(t,"List<",_LIST_GENERIC);

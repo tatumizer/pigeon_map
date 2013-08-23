@@ -3,12 +3,14 @@ part of pigeon;
 const _INT =1;
 const _BOOL =2;
 const _DOUBLE =3;
-const _STRING =4;
+const _STRING1 =4;
 const _PIGEON =5;
 const _LIST_GENERIC=6;
 const _LIST_STRING =7;
 const _LIST_INT =8;
 const _MAP_GENERIC=9;
+const _STRING2 =10;
+
 class Pigeonson {
 
    Uint8List buf;
@@ -30,28 +32,21 @@ class Pigeonson {
      var iType=0, iSlot=0;
      while (iSlot<len) {
        var value=obj._getValue(iSlot++);
-       var type=slotTypes[iType++];
-       String subtype=null;
-       if (type<0) {
-         type=-type;
-         subtype=slotTypes[iType++];
-       }
+       var type=slotTypes[iType];
+       var subtype=slotTypes[iType+1];
+       iType+=2;
        writeGeneric(value, type, subtype);
      }
    }  
   writeType(value,type) {
-    buf[bufPos++]=type;
-    if (value==null) {
-       buf[bufPos-1]=0xFF;
-       return true;
-    }  
-    return false;  
+    buf[bufPos++] = value==null? 0xFF : type;
   }  
   _writeInt(value) {
     buf[bufPos]=value;
     buf[bufPos+1]=value>>8;
     buf[bufPos+2]=value>>16;
     buf[bufPos+3]=value>>24;
+    bufPos+=4;
   }
   writeInt(value) {
     writeType(value,_INT);
@@ -74,11 +69,11 @@ class Pigeonson {
     _writeInt(length); 
   }  
   writeString(value) {
-    writeType(value,_STRING);
+    // optimistically, 1 byte per char
+    int firstPos=bufPos;
+    writeType(value,_STRING1);
     if (value==null) return;
     writeLength(value.length);
-    int firstPos=bufPos;
-    buf[bufPos++]= 1; // optimistically, 1 byte per char
     bool isOneByteString=true;
     for (int i=0; i<value.length; i++) {
       var codeUnit=value.codeUnitAt(i);
@@ -91,7 +86,8 @@ class Pigeonson {
     if (isOneByteString)
       return;
     bufPos=firstPos;
-    buf[bufPos++] =2; // 2 bytes per char
+    writeType(value,_STRING2);
+    writeLength(value.length);
     for (int i=0; i<value.length; i++) {
       var codeUnit=value.codeUnitAt(i);
       buf[bufPos]= codeUnit;
@@ -136,7 +132,7 @@ class Pigeonson {
       case _INT: writeInt(value); break;
       case _DOUBLE: writeDouble(value); break;
       case _BOOL: writeBool(value); break;
-      case _STRING: writeString(value); break;
+      case _STRING1: writeString(value); break;
       case _LIST_GENERIC: writeList(value, type>>5, subtype); break;
       case _MAP_GENERIC: writeMap(value, type>>5, subtype); break;
       case _PIGEON: writePigeon(value, subtype); break;

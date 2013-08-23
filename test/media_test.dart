@@ -111,8 +111,5 @@ main() {
   run(testStringifyNative, "stringifyNative");
   run(testStringifyPigeon, "stringifyPigeon");
   run(testPigeonsonSerialize, "serializePigeonson");
-//  const ITER=10000;  
-//  var message=new Message.parseJsonString(jsonString);
-//  print(message);
-//  print(stringify(message));
+
 }
