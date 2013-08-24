@@ -13,17 +13,25 @@ const _STRING2 =10;
 
 class Pigeonson {
 
-  Uint8List buf;
+  var buf;
   int bufPos=0;
-  int redZone;
+  int bufLength;
   serialize(PigeonStruct map) {
-    buf=new Uint8List(1000);
-    redZone=buf.lengthInBytes-20;
+    bufLength=1024;
+    buf=new Uint8List(bufLength);
     writePigeon(map, map.nameSet.type);
     return new Uint8List.view(buf.buffer, 0, bufPos);
   }
-   
+  _ensureSpace(extraLength) {
+    if (bufPos+extraLength>bufLength) {
+      var newBuf=new Uint8List(bufLength*2);
+      newBuf.setRange(0, bufPos, buf, 0);
+      buf=newBuf;
+      bufLength=newBuf.length;
+    }
+  }
   writePigeon(obj, objtype) {
+    _ensureSpace(8);
     writeType(_PIGEON);
     var slotTypes=obj.nameSet.pigeonsonSlotTypes;
     var len=obj.nameSet.length;
@@ -39,10 +47,11 @@ class Pigeonson {
   } 
   
   writeType(type) {
-    buf[bufPos++] = type;
+    buf[bufPos++] = type&0x1F;
   }
   
   writeInt(value) {
+    _ensureSpace(5);
     writeType(_INT);
     buf[bufPos]=value;
     buf[bufPos+1]=value>>8;
@@ -52,17 +61,19 @@ class Pigeonson {
 
   }
   writeDouble(value) {
+    _ensureSpace(9);
     writeType(_DOUBLE);
     throw "not implemented";
     //buf.setFloat64(bufPos,value,  Endianness.HOST_ENDIAN);
     //bufPos+=8; 
   } 
   writeBool(value) {
+    _ensureSpace(2);
     writeType(_BOOL);
     buf[bufPos++]= value?1:0;
   }
   writeTypeAndLength(type, length) {
-    buf[bufPos++]=type;
+    buf[bufPos++]=type&0x1F;
     if (length<=255) {
       buf[bufPos++] = length;
       return;
@@ -78,6 +89,7 @@ class Pigeonson {
   writeString(value) {
     // optimistically, 1 byte per char
     int firstPos=bufPos;
+    _ensureSpace(8+value.length*2);
     writeTypeAndLength(_STRING1, value.length);
     bool isOneByteString=true;
     for (int i=0; i<value.length; i++) {
@@ -100,28 +112,39 @@ class Pigeonson {
     }  
   } 
   writeList(value, type, subtype) {
+    _ensureSpace(8);
     writeTypeAndLength(_LIST_GENERIC, value.length);
     for (int i=0; i<value.length; i++)
       writeGeneric(value[i], type, subtype);
   }
   writeListInt(value) {
+    _ensureSpace(8+value.length*4);
     writeTypeAndLength(_LIST_INT, value.length);
     
-    for (int i=0; i<value.length; i++)
-      writeInt(value[i]);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+    }
   }
   writeListString(value) {
+    _ensureSpace(8);
     writeTypeAndLength(_LIST_STRING, value.length);
     
     for (int i=0; i<value.length; i++)
       writeString(value[i]);
   }
   writeMap(value, type, subtype) {
+    _ensureSpace(8);
     writeTypeAndLength(_MAP_GENERIC, value.length);
     value.forEach((k,v){ writeString(k); writeGeneric(v, type, subtype); });
   }
   writeGeneric(value, type, subtype) {
     if (value==null) {
+      _ensureSpace(8);
       buf[bufPos++]=0; // type=0 is null
       return;
     }
