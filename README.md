@@ -142,6 +142,8 @@ Press CTRL/R to run it - generator will scan the file and generate another file 
 any code you like - it will be copied into generated file as is (only @Prototypes get replaced)
 (Alternatiively, you can include generation logic in build.dart)
 
+Please see more complex example in test/proto_media.dart. When you run this file, it generates test/media.dart.
+
 Since generated object inherits from PigeonMap, all properties of PigeonMap hold.
 
 NOTE: program also generates small amount of metadata for mapping of struct keys to their types. Since keys are the same as attribute names, program uses another 
