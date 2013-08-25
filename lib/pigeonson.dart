@@ -27,7 +27,7 @@ class Pigeonson {
     return result;
   }
   _ensureSpace(extraLength) {
-    if (bufPos+extraLength>bufLength) {
+    while (bufPos+extraLength>bufLength) {
       var newBuf=new Uint8List(bufLength*2);
       newBuf.setRange(0, bufPos, buf, 0);
       buf=newBuf;
@@ -57,6 +57,7 @@ class Pigeonson {
   writeInt(value) {
     _ensureSpace(5);
     writeType(_INT);
+    if (value<0) throw "negative ints not supported yet";
     buf[bufPos]=value;
     buf[bufPos+1]=value>>8;
     buf[bufPos+2]=value>>16;
@@ -172,22 +173,16 @@ class Pigeonson {
 class PigeonsonParser {
   String rootType;
   var catalog;
-  var currentMetadata;
-  String currentType;
-  String key;
-  Object value;
-  Object currentContainer;
-  int currentIndex;
   Uint8List buf;
   int bufPos;
   int bufLength;
   PigeonsonParser(this.rootType, this.catalog) {
     
   }
-  PigeonStruct parse(str) {
-    this.buf=str;
+  PigeonStruct parse(bytes) {
+    this.buf=bytes;
     this.bufPos=0;
-    this.bufLength=str.length;
+    this.bufLength=bytes.length;
     var result = readGeneric(_PIGEON, rootType);
     if (bufPos!=bufLength) throw "unparsed data";
     return result;
@@ -221,7 +216,7 @@ class PigeonsonParser {
   }
   readInt() {
     // BUG: negative numbers are not treated correctly
-    var n = buf[bufPos] +(buf[bufPos+1]<<8)+ (buf[bufPos+2]<<16) + (buf[bufPos+3]<<24);
+    var n = buf[bufPos] | (buf[bufPos+1]<<8) | (buf[bufPos+2]<<16) | (buf[bufPos+3]<<24);
     bufPos+=4;
     return n;
   }
@@ -243,9 +238,16 @@ class PigeonsonParser {
   readString1() {
     int len=readLength();
     var list=new List<int>(len);
-    for (int i=0; i<len; i++) {
-      list[i]=buf[bufPos++];
+    //for (int i=0; i<len; i++) {
+    //  list[i]=buf[bufPos++];
+    //}
+    // this variant is much faster:
+    for (int from=0, to=len-1; from<=to; from++, to--) {
+      list[from]=buf[bufPos+from];
+      list[to]=buf[bufPos+to];
     }
+    bufPos+=len;
+    
     return new String.fromCharCodes(list);
   }
 
@@ -253,7 +255,7 @@ class PigeonsonParser {
     int len=readLength();
     var list=new List<int>(len);
     for (int i=0; i<len; i++, bufPos+=2)
-      list[i]=buf[bufPos]+(buf[bufPos+1]<<8);
+      list[i]=buf[bufPos]|(buf[bufPos+1]<<8);
     return new String.fromCharCodes(list);
   }
   readList(type, subtype) {
@@ -278,7 +280,7 @@ class PigeonsonParser {
     int len = readLength(); 
     var list=new List<String>(len);  
     for (int i=0; i<len; i++) {
-       readType(_STRING1);
+       readType(_STRING1); 
        list[i]=readString();
     }    
     
