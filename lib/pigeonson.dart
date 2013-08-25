@@ -19,8 +19,12 @@ class Pigeonson {
   serialize(PigeonStruct map) {
     bufLength=1024;
     buf=new Uint8List(bufLength);
+    bufPos=0;
     writePigeon(map, map.nameSet.type);
-    return new Uint8List.view(buf.buffer, 0, bufPos);
+    var result=new Uint8List(bufPos);
+    //return new Uint8List.view(buf.buffer, 0, bufPos);
+    result.setRange(0, bufPos, buf, 0);
+    return result;
   }
   _ensureSpace(extraLength) {
     if (bufPos+extraLength>bufLength) {
@@ -163,5 +167,138 @@ class Pigeonson {
       default: throw "unsupported type $sel";
     }
     
+  }
+}
+class PigeonsonParser {
+  String rootType;
+  var catalog;
+  var currentMetadata;
+  String currentType;
+  String key;
+  Object value;
+  Object currentContainer;
+  int currentIndex;
+  Uint8List buf;
+  int bufPos;
+  int bufLength;
+  PigeonsonParser(this.rootType, this.catalog) {
+    
+  }
+  PigeonStruct parse(str) {
+    this.buf=str;
+    this.bufPos=0;
+    this.bufLength=str.length;
+    var result = readGeneric(_PIGEON, rootType);
+    if (bufPos!=bufLength) throw "unparsed data";
+    return result;
+  }
+  PigeonStruct readPigeon(objtype) {
+    var metadata=catalog[objtype];
+    var container=metadata.constructor();
+    //var slotTypes=container.nameSet.slotTypes;
+    var pgSlotTypes=container.nameSet.pigeonsonSlotTypes;
+    var names=container.nameSet.names;
+    var len = names.length;
+    var iType=0;
+    bufPos++; // string type
+    String type=readString();
+    if (type != objtype) throw "type mismatch $type $objtype";
+    for (int i=0; i<len; i++) {
+      String key=names[i]; // for debugging only
+      var type=pgSlotTypes[iType++];
+      var subtype=pgSlotTypes[iType++];
+      var value=readGeneric(type, subtype);
+      container._setValue(i, value);
+    }
+    return container;
+  }
+  readType(expectedType) {
+    int t=buf[bufPos++]&0x1F;
+    int e=expectedType&0x1F;
+    if (t==e || t==0) return t;
+    if (t==_STRING2 && e==_STRING1) return t;
+    throw "expected type $e got $t at $bufPos ${buf.sublist(bufPos-1)}";
+  }
+  readInt() {
+    // BUG: negative numbers are not treated correctly
+    var n = buf[bufPos] +(buf[bufPos+1]<<8)+ (buf[bufPos+2]<<16) + (buf[bufPos+3]<<24);
+    bufPos+=4;
+    return n;
+  }
+  readBool() {
+    return buf[bufPos++]==1;
+  }
+  readDouble() {
+    throw "not implemented";
+  }
+  int readLength() {
+    int mode=buf[bufPos-1]&0x80;
+    if (mode==0) return buf[bufPos++];
+    return readInt();
+  }
+  readString() {
+    int type=buf[bufPos-1]&0x1F;
+    return type==_STRING1 ? readString1(): readString2();
+  }
+  readString1() {
+    int len=readLength();
+    var list=new List<int>(len);
+    for (int i=0; i<len; i++) {
+      list[i]=buf[bufPos++];
+    }
+    return new String.fromCharCodes(list);
+  }
+
+  readString2() {
+    int len=readLength();
+    var list=new List<int>(len);
+    for (int i=0; i<len; i++, bufPos+=2)
+      list[i]=buf[bufPos]+(buf[bufPos+1]<<8);
+    return new String.fromCharCodes(list);
+  }
+  readList(type, subtype) {
+    int len=readLength();
+    var list=[];
+    for (int i=0; i<len; i++)
+      list.add(readGeneric(type, subtype));
+    return list;
+  }
+  readMap(type, subtype) {
+    int len=readLength();
+    var map={};
+    for (int i=0; i<len; i++) {
+      map[readString()]=readGeneric(type, subtype);
+    }  
+    return map;
+  }
+  readListInt() {
+    throw "not implemented";
+  }
+  readListString() {
+    int len = readLength(); 
+    var list=new List<String>(len);  
+    for (int i=0; i<len; i++) {
+       readType(_STRING1);
+       list[i]=readString();
+    }    
+    
+  }
+  readGeneric(type, subtype) {
+    int t=readType(type);
+    if (t==0) return null;
+    switch (t) {
+      case 0: return;
+      case _INT: return readInt();
+      case _DOUBLE: return readDouble();
+      case _BOOL: return readBool();
+      case _STRING1: return readString1(); 
+      case _STRING2: return readString2(); 
+      case _LIST_GENERIC: return readList(type>>5, subtype);
+      case _MAP_GENERIC: return readMap(type>>5, subtype);
+      case _PIGEON: return readPigeon(subtype);
+      case _LIST_INT: return readListInt();
+      case _LIST_STRING: return readListString();
+      default: throw "unsupported type $t";
+    }
   }
 }

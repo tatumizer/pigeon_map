@@ -97,11 +97,23 @@ testPigeonsonSerialize(iterations) {
   }
   return x;
 }
+testPigeonsonParse(iterations) {
+  int x=0;
+  for (int i=0; i<iterations; i++) {
+    var obj=new PigeonsonParser("Message", pigeonTypeCatalog).parse(pigeonson);
+    x=(x+obj.length)&0xff;
+  }
+  return x;
+}
 var jsonObject = parse(jsonString);
 var pigeonObject=new Message.parseJsonString(jsonString);
+var pigeonson = new Pigeonson().serialize(pigeonObject);
+var revPigeonObject = new PigeonsonParser("Message", pigeonTypeCatalog).parse(pigeonson);
 main() {
     
   print("source length ${jsonString.length}");
+  print("pigeonson length ${pigeonson.length}");
+  //print(revPigeonObject);
   run(testEmptyLoop, "Warmup");
   run(testEmptyLoop, "Warmup");
   run(testEmptyLoop, "Warmup");
@@ -111,5 +123,6 @@ main() {
   run(testStringifyNative, "stringifyNative");
   run(testStringifyPigeon, "stringifyPigeon");
   run(testPigeonsonSerialize, "serializePigeonson");
+  run(testPigeonsonParse, "parsePigeonson");
 
 }
