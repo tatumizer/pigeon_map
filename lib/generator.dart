@@ -113,6 +113,7 @@ class Generator {
     sb.writeln("class $className extends PigeonStruct {");
 
     sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",pigeonTypeCatalog);');
+    sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",pigeonTypeCatalog);');
     
     sb.writeln("  $className() : super(_metadata_${className}) {}");
     int i=0;

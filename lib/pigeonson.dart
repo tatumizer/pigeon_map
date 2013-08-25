@@ -10,7 +10,7 @@ const _LIST_STRING =7;
 const _LIST_INT =8;
 const _MAP_GENERIC=9;
 const _STRING2 =10;
-
+PigeonStruct pgsonMessage2Pigeon(bytes, type, catalog) => new PigeonsonParser(type, catalog).parse(bytes);
 class Pigeonson {
 
   var buf;

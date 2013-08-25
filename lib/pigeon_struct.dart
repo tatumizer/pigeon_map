@@ -6,6 +6,7 @@ class PigeonStruct extends PigeonMap {
   _setValue(n,val){_values[n]=val;}
   _getValue(n)=>_values[n];
   String toJsonString() => stringify(this);
+  Uint8List toPgsonMessage() => new Pigeonson().serialize(this);
 }
 class PigeonStructMetadata extends NameSet {
   static extractNameSet(info) {

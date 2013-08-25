@@ -92,7 +92,7 @@ testJsonStringPigeon(iterations) {
 testPigeonsonSerialize(iterations) {
   int x=0;
   for (int i=0; i<iterations; i++) {
-    Uint8List buf=new Pigeonson().serialize(pigeonObject);
+    Uint8List buf=pigeonObject.toPgsonMessage();
     x=(x+buf.length)&0xff;
   }
   return x;
@@ -100,7 +100,7 @@ testPigeonsonSerialize(iterations) {
 testPigeonsonParse(iterations) {
   int x=0;
   for (int i=0; i<iterations; i++) {
-    var obj=new PigeonsonParser("Message", pigeonTypeCatalog).parse(pigeonson);
+    var obj=new Message.fromPgsonMessage(pigeonson);
     x=(x+obj.length)&0xff;
   }
   return x;

@@ -12,6 +12,7 @@ var pigeonTypeCatalog = {
 var _metadata_Message = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Message', 'attributes': [{'type': 'Media', 'name': 'media'}, {'type': 'List<Image>', 'name': 'images'}]});
 class Message extends PigeonStruct {
   factory Message.parseJsonString(str) => jsonString2Pigeon(str, "Message",pigeonTypeCatalog);
+  factory Message.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Message",pigeonTypeCatalog);
   Message() : super(_metadata_Message) {}
   Media get media => _getValue(0);
   void set media(Media val) => _setValue(0,val);
@@ -21,6 +22,7 @@ class Message extends PigeonStruct {
 var _metadata_Media = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Media', 'attributes': [{'type': 'String', 'name': 'uri'}, {'type': 'String', 'name': 'title'}, {'type': 'int', 'name': 'width'}, {'type': 'int', 'name': 'height'}, {'type': 'String', 'name': 'format'}, {'type': 'int', 'name': 'duration'}, {'type': 'int', 'name': 'size'}, {'type': 'int', 'name': 'bitrate'}, {'type': 'List<String>', 'name': 'persons'}, {'type': 'String', 'name': 'player'}, {'type': 'String', 'name': 'copyright'}]});
 class Media extends PigeonStruct {
   factory Media.parseJsonString(str) => jsonString2Pigeon(str, "Media",pigeonTypeCatalog);
+  factory Media.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Media",pigeonTypeCatalog);
   Media() : super(_metadata_Media) {}
   String get uri => _getValue(0);
   void set uri(String val) => _setValue(0,val);
@@ -48,6 +50,7 @@ class Media extends PigeonStruct {
 var _metadata_Image = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Image', 'attributes': [{'type': 'String', 'name': 'uri'}, {'type': 'String', 'name': 'title'}, {'type': 'int', 'name': 'width'}, {'type': 'int', 'name': 'height'}, {'type': 'String', 'name': 'size'}]});
 class Image extends PigeonStruct {
   factory Image.parseJsonString(str) => jsonString2Pigeon(str, "Image",pigeonTypeCatalog);
+  factory Image.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Image",pigeonTypeCatalog);
   Image() : super(_metadata_Image) {}
   String get uri => _getValue(0);
   void set uri(String val) => _setValue(0,val);
