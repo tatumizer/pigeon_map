@@ -159,7 +159,7 @@ recursively:
 
 - primitive types (int, double, bool, String) are supported
 
-- if T - supported type, then List<T> and Map<String,T> are supported types
+- if T - supported type, then `List<T>` and `Map<String,T>` are supported types
 
 - class extending PigeonStruct is supported if all its attribute types are suported.
 
