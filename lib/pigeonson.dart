@@ -10,6 +10,18 @@ const _LIST_STRING =7;
 const _LIST_INT =8;
 const _MAP_GENERIC=9;
 const _STRING2 =10;
+const _DATE_TIME =11;
+const _UINT8_LIST=12;
+const _UINT16_LIST=13;
+const _INT8_LIST=14;
+const _INT16_LIST=15;
+const _UINT32_LIST=16;
+const _INT32_LIST=17;
+const _UINT64_LIST=18;
+const _INT64_LIST=19;
+const _FLOAT32_LIST=20;
+const _FLOAT64_LIST=21;
+
 PigeonStruct pgsonMessage2Pigeon(bytes, type, catalog) => new PigeonsonParser(type, catalog).parse(bytes);
 class Pigeonson {
 
@@ -42,7 +54,7 @@ class Pigeonson {
     writeString(objtype);
     var iType=0, iSlot=0;
     while (iSlot<len) {
-      var value=obj._getValue(iSlot++);
+      var value=obj.getValue(iSlot++);
       var type=slotTypes[iType];
       var subtype=slotTypes[iType+1];
       iType+=2;
@@ -57,20 +69,20 @@ class Pigeonson {
   writeInt(value) {
     _ensureSpace(5);
     writeType(_INT);
+    if (value>((1<<30)-1)) throw "ints bigger than 1<<31-1 not supported yet";
     if (value<0) throw "negative ints not supported yet";
     buf[bufPos]=value;
     buf[bufPos+1]=value>>8;
     buf[bufPos+2]=value>>16;
     buf[bufPos+3]=value>>24;
     bufPos+=4;
-
   }
   writeDouble(value) {
     _ensureSpace(9);
     writeType(_DOUBLE);
-    throw "not implemented";
-    //buf.setFloat64(bufPos,value,  Endianness.HOST_ENDIAN);
-    //bufPos+=8; 
+    var byteData=new ByteData.view(buf.buffer, bufPos, 8);
+    byteData.setFloat64(0, value, Endianness.LITTLE_ENDIAN);
+    bufPos+=8; 
   } 
   writeBool(value) {
     _ensureSpace(2);
@@ -128,6 +140,123 @@ class Pigeonson {
     
     for (int i=0; i<value.length; i++) {
       var val=value[i];
+      if (val>((1<<30)-1)) throw "ints bigger than 1<<31-1 not supported yet";
+      if (val<0) throw "negative ints not supported yet";
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+    }
+  }
+  writeUint8List(value) {
+    _ensureSpace(8+value.length);
+    writeTypeAndLength(_UINT8_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos++]=val;
+    }
+  }
+  writeInt8List(value) {
+    _ensureSpace(8+value.length);
+    writeTypeAndLength(_INT8_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos++]=val;
+    }
+  }
+  writeUint16List(value) {
+    _ensureSpace(8+2*value.length);
+    writeTypeAndLength(_UINT16_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      bufPos+=2;
+    }
+  }
+  writeInt16List(value) {
+    _ensureSpace(8+2*value.length);
+    writeTypeAndLength(_INT16_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      bufPos+=2;
+    }
+  }
+  writeUint32List(value) {
+    _ensureSpace(8+4*value.length);
+    writeTypeAndLength(_UINT32_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+    }
+  }
+  writeInt32List(value) {
+    _ensureSpace(8+4*value.length);
+    writeTypeAndLength(_INT32_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i];
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+    }
+  }
+  writeUint64List(value) {
+    _ensureSpace(8+8*value.length);
+    writeTypeAndLength(_UINT64_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      
+      var val=value[i]&0xFFFFFFFF;
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+      val=(value[i]>>32)&0xFFFFFFFF;
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+    }
+  }
+  writeFloat32List(value) {
+    _ensureSpace(8+4*value.length);
+    var byteData=new ByteData.view(buf.buffer, 0, buf.length);
+    writeTypeAndLength(_FLOAT32_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      byteData.setFloat32(bufPos, value[i], Endianness.LITTLE_ENDIAN);
+      bufPos+=4; 
+    }  
+  }
+  writeFloat64List(value) {
+    _ensureSpace(8+8*value.length);
+    var byteData=new ByteData.view(buf.buffer, 0, buf.length);
+    writeTypeAndLength(_FLOAT64_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      byteData.setFloat64(bufPos, value[i], Endianness.LITTLE_ENDIAN);
+      bufPos+=8; 
+    }  
+  }
+  writeInt64List(value) {
+    _ensureSpace(8+8*value.length);
+    writeTypeAndLength(_INT64_LIST, value.length);
+    for (int i=0; i<value.length; i++) {
+      var val=value[i]&0xFFFFFFFF;
+      buf[bufPos]=val;
+      buf[bufPos+1]=val>>8;
+      buf[bufPos+2]=val>>16;
+      buf[bufPos+3]=val>>24;
+      bufPos+=4;
+      val=(value[i]>>32)&0xFFFFFFFF;
       buf[bufPos]=val;
       buf[bufPos+1]=val>>8;
       buf[bufPos+2]=val>>16;
@@ -141,6 +270,12 @@ class Pigeonson {
     
     for (int i=0; i<value.length; i++)
       writeString(value[i]);
+  }
+  writeDateTime(value) {
+    _ensureSpace(32);
+    var str=value.toString();
+    writeType(_DATE_TIME);
+    writeString(str);
   }
   writeMap(value, type, subtype) {
     _ensureSpace(8);
@@ -165,6 +300,17 @@ class Pigeonson {
       case _PIGEON: writePigeon(value, subtype); break;
       case _LIST_INT: writeListInt(value); break;
       case _LIST_STRING: writeListString(value); break;
+      case _DATE_TIME: writeDateTime(value); break;
+      case _UINT8_LIST: writeUint8List(value); break;
+      case _UINT16_LIST: writeUint16List(value); break;
+      case _UINT32_LIST: writeUint32List(value); break;
+      case _UINT64_LIST: writeUint64List(value); break;
+      case _INT8_LIST: writeInt8List(value); break;
+      case _INT16_LIST: writeInt16List(value); break;
+      case _INT32_LIST: writeInt32List(value); break;
+      case _INT64_LIST: writeInt64List(value); break;
+      case _FLOAT32_LIST: writeFloat32List(value); break;
+      case _FLOAT64_LIST: writeFloat64List(value); break;
       default: throw "unsupported type $sel";
     }
     
@@ -203,7 +349,7 @@ class PigeonsonParser {
       var type=pgSlotTypes[iType++];
       var subtype=pgSlotTypes[iType++];
       var value=readGeneric(type, subtype);
-      container._setValue(i, value);
+      container.setValue(i, value);
     }
     return container;
   }
@@ -215,7 +361,7 @@ class PigeonsonParser {
     throw "expected type $e got $t at $bufPos ${buf.sublist(bufPos-1)}";
   }
   readInt() {
-    // BUG: negative numbers are not treated correctly
+    
     var n = buf[bufPos] | (buf[bufPos+1]<<8) | (buf[bufPos+2]<<16) | (buf[bufPos+3]<<24);
     bufPos+=4;
     return n;
@@ -224,7 +370,11 @@ class PigeonsonParser {
     return buf[bufPos++]==1;
   }
   readDouble() {
-    throw "not implemented";
+    var byteData=new ByteData.view(buf.buffer, bufPos, 8);
+    double d=byteData.getFloat64(0, Endianness.LITTLE_ENDIAN);
+    bufPos+=8;
+    return d;
+    
   }
   int readLength() {
     int mode=buf[bufPos-1]&0x80;
@@ -276,6 +426,106 @@ class PigeonsonParser {
   readListInt() {
     throw "not implemented";
   }
+  readUint8List() {
+    int len=readLength();
+    Uint8List list=new Uint8List(len);
+    for (int i=0; i<len; i++) {
+      list[i]=buf[bufPos++];
+    }
+    return list;
+  }
+  readUint16List() {
+    int len=readLength();
+    Uint16List list=new Uint16List(len);
+    for (int i=0; i<len; i++) {
+      list[i]=buf[bufPos]+(buf[bufPos+1]<<8);
+      bufPos+=2;
+    }
+    return list;
+  }
+  readUint32List() {
+    int len=readLength();
+    Uint32List list=new Uint32List(len);
+    for (int i=0; i<len; i++) {
+      list[i]=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+    }
+    return list;
+  }
+  readUint64List() {
+    int len=readLength();
+    Uint64List list=new Uint64List(len);
+    for (int i=0; i<len; i++) {
+      var lo=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+      var hi=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+      list[i]=(hi<<32)+lo;
+    }
+    return list;
+  }
+  readInt8List() {
+    int len=readLength();
+    Int8List list=new Int8List(len);
+    for (int i=0; i<len; i++) {
+      var v=buf[bufPos++];
+      list[i]=v>=128 ? v-256: v;
+    }
+    return list;
+  }
+  readInt16List() {
+    int len=readLength();
+    Int16List list=new Int16List(len);
+    for (int i=0; i<len; i++) {
+      var v=buf[bufPos]+(buf[bufPos+1]<<8);
+      bufPos+=2;
+      list[i]=v>=32768 ? v-65536: v;
+    }
+    return list;
+  }
+  readInt32List() {
+    int len=readLength();
+    Int32List list=new Int32List(len);
+    for (int i=0; i<len; i++) {
+      var v=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+      list[i]=v>=2147483648 ? v-4294967296: v;
+    }
+    return list;
+  }
+  readInt64List() {
+    int len=readLength();
+    Int64List list=new Int64List(len);
+    for (int i=0; i<len; i++) {
+      var v=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+      var w=buf[bufPos]+(buf[bufPos+1]<<8)+(buf[bufPos+2]<<16)+(buf[bufPos+3]<<24);
+      bufPos+=4;
+      var x=(w<<32)+v;
+      list[i]=w>=2147483648 ? x-(1<<64): x;
+    }
+    return list;
+  }
+  readFloat32List() {
+    int len=readLength();
+    Float32List list=new Float32List(len);
+    var byteData=new ByteData.view(buf.buffer, 0, buf.length);
+    for (int i=0; i<len; i++) {
+      list[i]=byteData.getFloat32(bufPos,Endianness.LITTLE_ENDIAN);
+      bufPos+=4; 
+    }  
+    return list;
+  }
+  readFloat64List() {
+    int len=readLength();
+    Float64List list=new Float64List(len);
+    var byteData=new ByteData.view(buf.buffer, 0, buf.length);
+    for (int i=0; i<len; i++) {
+      list[i]=byteData.getFloat64(bufPos,Endianness.LITTLE_ENDIAN);
+      bufPos+=8; 
+    }  
+    return list;
+  }
   readListString() {
     int len = readLength(); 
     var list=new List<String>(len);  
@@ -284,6 +534,11 @@ class PigeonsonParser {
        list[i]=readString();
     }    
     
+  }
+  readDateTime() {
+    readType(_STRING1);
+    var str=readString();
+    return DateTime.parse(str);
   }
   readGeneric(type, subtype) {
     int t=readType(type);
@@ -300,6 +555,17 @@ class PigeonsonParser {
       case _PIGEON: return readPigeon(subtype);
       case _LIST_INT: return readListInt();
       case _LIST_STRING: return readListString();
+      case _DATE_TIME: return readDateTime();
+      case _UINT8_LIST: return readUint8List();
+      case _UINT16_LIST: return readUint16List();
+      case _UINT32_LIST: return readUint32List();
+      case _UINT64_LIST: return readUint64List();
+      case _INT8_LIST: return readInt8List();
+      case _INT16_LIST: return readInt16List();
+      case _INT32_LIST: return readInt32List();
+      case _INT64_LIST: return readInt64List();
+      case _FLOAT32_LIST: return readFloat32List();
+      case _FLOAT64_LIST: return readFloat64List();
       default: throw "unsupported type $t";
     }
   }

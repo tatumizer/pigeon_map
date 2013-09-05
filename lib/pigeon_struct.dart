@@ -2,10 +2,18 @@ part of pigeon;
 
 
 class PigeonStruct extends PigeonMap {
+  
   PigeonStruct(metadata): super(metadata){ }
-  _setValue(n,val){_values[n]=val;}
-  _getValue(n)=>_values[n];
-  String toJsonString() => stringify(this);
+  setValue(n,val){_values[n]=val;}
+  getValue(n) { var v= _values[n]; return identical(v, PigeonMap._undefined) ? null :v; }
+  String toJsonString() {
+    try { // UGLY HACK
+      PigeonMap.jsonStringifyInEffect++;
+      return stringify(this);
+    } finally {
+      PigeonMap.jsonStringifyInEffect--;
+    }
+  }
   Uint8List toPgsonMessage() => new Pigeonson().serialize(this);
 }
 class PigeonStructMetadata extends NameSet {
@@ -52,14 +60,26 @@ class PigeonStructMetadata extends NameSet {
     else if (t=="bool") return _BOOL;
     else if (t=="double") return _DOUBLE;
     else if (t=="String") return _STRING1;
+    else if (t=="DateTime") return _DATE_TIME;
     else if (t=="List<int>") return _LIST_INT;
     else if (t=="List<String>") return _LIST_STRING;
+    else if (t=="Uint8List") return _UINT8_LIST;
+    else if (t=="Uint16List") return _UINT16_LIST;
+    else if (t=="Uint32List") return _UINT32_LIST;
+    else if (t=="Uint64List") return _UINT64_LIST;
+    else if (t=="Int8List") return _INT8_LIST;
+    else if (t=="Int16List") return _INT16_LIST;
+    else if (t=="Int32List") return _INT32_LIST;
+    else if (t=="Int64List") return _INT64_LIST;
+    else if (t=="Float32List") return _FLOAT32_LIST;
+    else if (t=="Float64List") return _FLOAT64_LIST;
     else if (t.startsWith("List<")) return _extractGeneric(t,"List<",_LIST_GENERIC);
     else if (t.startsWith("Map<String,")) return _extractGeneric(t,"Map<String",_MAP_GENERIC);
     else return _PIGEON;
     
   }
   getSlotType(key)=> slotTypes[key];
+  getSlotIndex(key)=> _getIndex(key);
 }
 class SerializationMetadata {
   String type;

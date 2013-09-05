@@ -1,4 +1,6 @@
 import '../lib/pigeon.dart';
+import "dart:typed_data";
+
 @Prototype
 class Message {
   Media media;
@@ -25,6 +27,13 @@ class Image {
   int width;
   int height;
   String size;
+}
+
+@Prototype
+class Foo {
+  DateTime dateTime;
+  Uint8List u8;
+  int size;
 }
 main() {
   //new JsonParser(jsonString,new FakePigeonJsonListener()).parse();

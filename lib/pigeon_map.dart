@@ -82,6 +82,7 @@ class NameSet {
 }
 
 class PigeonMap implements Map<String, dynamic> {
+  static int jsonStringifyInEffect=0;
   static final _undefined = new Object();
   NameSet _nameSet;
   int _length = -1;
@@ -103,6 +104,7 @@ class PigeonMap implements Map<String, dynamic> {
     int n = _nameSet._getIndex(key);
     if (n<0) _keyError(key);
     var v = _values[n];
+    
     return identical(v, _undefined) ? null :v;
   }
 
@@ -126,8 +128,11 @@ class PigeonMap implements Map<String, dynamic> {
   void forEach(void f(String key, dynamic value)) {
     var names=_nameSet._names;
     for (int i=0; i<_values.length; i++) {
-      if (!identical(_values[i], _undefined))
-        f(names[i],_values[i]);
+      var v=_values[i];
+      if (!identical(v, _undefined)) {
+        if (v is DateTime && jsonStringifyInEffect>0) v=v.toString();
+        f(names[i],v);
+      }  
     }    
   }
 

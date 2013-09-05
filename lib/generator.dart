@@ -41,6 +41,7 @@ class ClassDef {
     return cd;
   }
   toString() => "{'type': '${name}', 'attributes': $attributes}";
+  sortAttributes() => attributes.sort((a, b) => a.name.compareTo(b.name));
 }
 class _SerializationMetadata {
   String type;
@@ -61,7 +62,10 @@ List<Slice> findPrototypes(str) {
   return slices;
 }
 addMetadata(String type) {
-  isPrimitiveType(type) => ["int","double","num","bool","String",""].contains(type);
+  // these are quasi-primitives. Ugly, To be fixed later
+  isPrimitiveType(type) => ["int","double","num","bool","DateTime", "String",""].contains(type) || 
+      ["Uint8List", "Int8List", "Uint16List", "Int16List", "Uint32List", "Int32List", "Uint64List", "Int64List"].contains(type) ||
+      ["Float32List", "Float64List"].contains(type);
   isPigeonMap(type) => true; // TODO: implement it
   stripEnclosure(String type, prefix) {
     int s=type.indexOf(prefix), e=type.lastIndexOf(">");
@@ -70,13 +74,18 @@ addMetadata(String type) {
   var currentMetadata=new _SerializationMetadata();
   type=type.replaceAll(" ", "");
   currentMetadata.type=type;
-  currentMetadata.constructor= isPrimitiveType(type)? "null" : "() => new $type()";
+  currentMetadata.constructor= 
+      isPrimitiveType(type) && type.contains("Float") ?  "() => new List<double>()" :
+      isPrimitiveType(type) && type.contains("List") ?  "() => new List<int>()" :
+      isPrimitiveType(type)? "null" : "() => new $type()";
   currentMetadata.childType = 
       type.startsWith("List<") ? stripEnclosure(type,"List<") :
       type.startsWith("Map<String,") ? stripEnclosure(type,"Map<String,") : 
       type.contains("<") ? throw new ArgumentError("unsupported type $type") :
-      isPrimitiveType(type) ? null :   
+      isPrimitiveType(type) && type.contains("List") ? "int" :
+      isPrimitiveType(type) ? null :
       isPigeonMap(type) ? null : throw new ArgumentError("unsupported type $type");
+      
   currentMetadata.category =   
       type.startsWith("List<") ? _LIST_CAT :
       type.startsWith("Map<String,") ? _GENERIC_MAP_CAT : 
@@ -100,6 +109,7 @@ class Generator {
     return sb.toString().replaceAll('"null"',"null");
   }
   addClass(ClassDef classDef) {
+    classDef.sortAttributes();
     var names=new List.from(classDef.attributes.map((a)=>a.name));
     names.sort((a, b) => a.compareTo(b));
     names=names.map((x)=>'"$x"');
@@ -119,8 +129,8 @@ class Generator {
     int i=0;
     for (Attribute attr in classDef.attributes) {
       
-      sb.writeln("  ${attr.type} get ${attr.name} => _getValue($i);");
-      sb.writeln("  void set ${attr.name}(${attr.type} val) => _setValue($i,val);");
+      sb.writeln("  ${attr.type} get ${attr.name} => getValue($i);");
+      sb.writeln("  void set ${attr.name}(${attr.type} val) => setValue($i,val);");
       i++;
     }
     sb.writeln("}");

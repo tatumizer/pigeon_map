@@ -1,7 +1,7 @@
 Overview
 ========
 Pigeon library provides implementation of memory- and performance-efficient map-backed data structures. These structures are efficiently serializable with  no extra 
-bolierplate. Serialization doesn't rely on reflection and withstands dart2javascript conversion and minification.
+boilerplate. Serialization doesn't rely on reflection and withstands dart2javascript conversion and minification.
 
 Library consists of the following components:
 
@@ -25,12 +25,12 @@ and program generates something like this:
 ```javascript
 class Person extends PigeonStruct {
   Person() {/*...*/} 
-  String get firstName => _getValue(0);
-  void set firstName(val) => _setValue(0,val);
-  String get lastName => _getValue(1);
-  void set lastName(val) => _setValue(1,val);
-  int get yearOfBirth => _getValue(2);
-  void set yearOfBirth(val) => _setValue(2,val);
+  String get firstName => getValue(0);
+  void set firstName(val) => setValue(0,val);
+  String get lastName => getValue(1);
+  void set lastName(val) => setValue(1,val);
+  int get yearOfBirth => getValue(2);
+  void set yearOfBirth(val) => setValue(2,val);
 }
 ```
 
@@ -80,11 +80,11 @@ If not, algo switches into slow mode (binary search).
 
 Now let's consider an abstract problem. We have an array of N unique 31-bit numbers h[i], and we want to find a function f such as
 f(h[i]) produces unique (!) values in the range, say, 0..255. Obvious way to do that is just to take 8 bits 0..7 from each h[i].
-If they are unqiue, we are done. If not, we try bits 1..8, then 2..9 etc - after a number of attempts, we have a good chance to succeed (see below)
+If they are unique, we are done. If not, we try bits 1..8, then 2..9 etc - after a number of attempts, we have a good chance to succeed (see below)
 
 Now that we have unique small hashCodes, the task is trivial.
 
-Suppose sh("foo")=0x15, sh("bar")=0xFE, sh("baz") = 0x2A, whene sh(x) is a "small hash code".
+Suppose sh("foo")=0x15, sh("bar")=0xFE, sh("baz") = 0x2A, where sh(x) is a "small hash code".
 
 We create a table of 256 entries initialized to -1, and set
 
@@ -98,7 +98,7 @@ the chance of NOT finding a mapping is about 1/10000.
 
 One notable property of PigeonMaps is that the keys in NameSet and keys used for *reading* data are normally constant strings.
 For constant strings, expenses for hashCode calculations are essentially zero, and comparison for equality is satisfied by identity check.
-Since hashCode and equality is all that's needed here, and collisions are prevented, finding a slot for value bois down to shift and mask in typical case.
+Since hashCode and equality is all that's needed here, and collisions are prevented, finding a slot for value boils down to shift and mask in typical case.
 (Please refer to the source code for details, otherwise it sounds cryptic)
 
 NOTE: PigeonMap supports up to 64 keys for NameSet. It's enough for most practical purposes. You can have as many NameSets as you wish. 
@@ -118,7 +118,7 @@ Other use cases involve PigeonStructs.
 Pigeon Struct
 =============
 
-PigeonStruct is extention of PigeonMap that provides getters/setters for attributes, so it looks like a hibrid between map and struct. Good for value objects, 
+PigeonStruct is extension of PigeonMap that provides getters/setters for attributes, so it looks like a hybrid between map and struct. Good for value objects, 
 DAO, DTO (those terms mean more or less the same).
 
 Code generation is simple: create a file containing prototypes of your data structures, and main function that calls "generate":
@@ -138,9 +138,9 @@ main() {
 }
 ```
 
-Press CTRL/R to run it - generator will scan the file and generate another file here all @Prototypes are replaced by generated code. You file otherise may contain
+Press CTRL/R to run it - generator will scan the file and generate another file here all @Prototypes are replaced by generated code. You file otherwise may contain
 any code you like - it will be copied into generated file as is (only @Prototypes get replaced)
-(Alternatiively, you can include generation logic in build.dart)
+(Alternatively,, you can include generation logic in build.dart)
 
 Please see more complex example in test/proto_media.dart. When you run this file, it generates test/media.dart.
 
@@ -161,9 +161,14 @@ recursively:
 
 - if T - supported type, then `List<T>` and `Map<String,T>` are supported types
 
-- class extending PigeonStruct is supported if all its attribute types are suported.
+- typed_data classes are supported (Uint8List, Int8List, Uint16List, Int16List, Uint32List, Int32List, Uint64List, Int64List, 
+Float32List, Float64List)
 
-NOTE: support for typed_data will be added in the future.
+- class extending PigeonStruct is supported if all its attribute types are supported.
+
+- DateTime is supported, but only as an attribute of PigeonStruct (this means that if you have, say, List<DateTime>, it won't work). This limitation is due to insufficient support
+of custom classes in current JSON parser. (dart team agreed to fix it, but we don't know when).
+
  
 To get JSON string, simply call toJsonString() method of any PigeonStruct. To parse JSON string, call `new Person.fromJsonString(str)`.
 Performance of JSON toJsonString/fromJSONString is the same as for default JSON library, but you get typed structures for the same money.
@@ -180,11 +185,12 @@ bytes = person.toPgsonMessage();  // "bytes" is Uint8List
 new Person.fromPgsonMessage(bytes);
 ```
 
-Deserializer is 1.7 times slower than serializer (this ratio is normal for serializers).
+Deserializer is 1.6-1.7 times slower than serializer (this ratio is normal for serializers).
 
-Compared with corresponding Json methods discussed above, Pgson is faster by factor of 8 in serialization, and by factor of 2.5 in deserialization.
+Compared with corresponding Json methods discussed above, Pgson is faster by factor of 6-8(*) in serialization, and by factor of 2.5 in deserialization.
 Generated byte message is approx. 2 times shorter than corresponding Json string.
 
+(*) depends on type of processor and other factors
 
 
 
