@@ -1,6 +1,7 @@
+//>stuff.dart
 import '../lib/pigeon.dart';
 import "dart:typed_data";
-
+//+//test
 @Prototype
 class Stuff {
   double x;
@@ -17,7 +18,6 @@ class Stuff {
   Int64List i64;
 }
 
-main() {
-  generate("stuff.dart");
- 
-}
+main() { //-
+  preprocess(); //-
+} //-

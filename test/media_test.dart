@@ -111,27 +111,8 @@ var pigeonson = new Pigeonson().serialize(pigeonObject);
 var revPigeonObject = new PigeonsonParser("Message", pigeonTypeCatalog).parse(pigeonson);
 main() {
 
-  var foo=new Foo();
-  foo.u8=new Uint8List(2)..setRange(0,2,[1,2],0);
-  foo.size=100;
-  foo.dateTime=new DateTime.now();
-  print(foo.u8);
-  print(foo.size);
-  String foostr =foo.toJsonString();
-  print(foostr);
-  var foo1=new Foo.parseJsonString(foostr);
-  print(foo1);
-  print(foo1.u8.runtimeType);
-  print(foo1.dateTime.runtimeType);
-  
-  //var bytes=foo.toPgsonMessage();
-  //var foo1=new Foo.fromPgsonMessage(bytes);
-//  String foostr =foo.toJsonString();
-//  var foo1=new Foo.parseJsonString(foostr);
-//  print(foo1.dateTime.runtimeType);
   print("source length ${jsonString.length}");
   print("pigeonson length ${pigeonson.length}");
-  //print(revPigeonObject);
   run(testEmptyLoop, "Warmup");
   run(testEmptyLoop, "Warmup");
   run(testEmptyLoop, "Warmup");

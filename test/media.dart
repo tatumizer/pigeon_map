@@ -1,5 +1,6 @@
+//generated from prototype file proto_media.dart
+
 import '../lib/pigeon.dart';
-import "dart:typed_data";
 
 var pigeonTypeCatalog = {
   "Message" : new SerializationMetadata("Message", () => new Message(), null, 0),
@@ -9,9 +10,6 @@ var pigeonTypeCatalog = {
   "int" : new SerializationMetadata("int", null, null, 1),
   "String" : new SerializationMetadata("String", null, null, 1),
   "List<String>" : new SerializationMetadata("List<String>", () => new List<String>(), "String", 2),
-  "Foo" : new SerializationMetadata("Foo", () => new Foo(), null, 0),
-  "DateTime" : new SerializationMetadata("DateTime", null, null, 1),
-  "Uint8List" : new SerializationMetadata("Uint8List", () => new List<int>(), "int", 1),
 };
 
 var _metadata_Message = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Message', 'attributes': [{'type': 'List<Image>', 'name': 'images'}, {'type': 'Media', 'name': 'media'}]});
@@ -68,25 +66,8 @@ class Image extends PigeonStruct {
   int get width => getValue(4);
   void set width(int val) => setValue(4,val);
 }
-var _metadata_Foo = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Foo', 'attributes': [{'type': 'DateTime', 'name': 'dateTime'}, {'type': 'int', 'name': 'size'}, {'type': 'Uint8List', 'name': 'u8'}]});
-class Foo extends PigeonStruct {
-  factory Foo.parseJsonString(str) => jsonString2Pigeon(str, "Foo",pigeonTypeCatalog);
-  factory Foo.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Foo",pigeonTypeCatalog);
-  Foo() : super(_metadata_Foo) {}
-  DateTime get dateTime => getValue(0);
-  void set dateTime(DateTime val) => setValue(0,val);
-  int get size => getValue(1);
-  void set size(int val) => setValue(1,val);
-  Uint8List get u8 => getValue(2);
-  void set u8(Uint8List val) => setValue(2,val);
-}
 
 
 
 
-
-main() {
-  //new JsonParser(jsonString,new FakePigeonJsonListener()).parse();
-  generate("media.dart");
- 
-}
+

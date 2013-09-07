@@ -1,8 +1,9 @@
 
 part of pigeon;
+
 const Prototype = 42;
-String readSource() {
-  return new File(Platform.script).readAsStringSync();
+String readSource(fileName) {
+  return new File(fileName).readAsStringSync();
 }
 void writeSource(str) {
   new File(Platform.script).writeAsStringSync(str);
@@ -137,9 +138,21 @@ class Generator {
   }
   toString() => "var pigeonTypeCatalog = ${catalogToString()}\n$sb";
 }
-
-generate(fileName) {
-  String source=readSource();
+generate(String fileName) {
+  throw "DEPRECATED! Use 'preprocess'method instead- see README"; 
+}
+preprocess([String srcFileName]) {
+  if (srcFileName==null) srcFileName=Platform.script;
+  srcFileName=srcFileName.replaceAll("\\","/");
+  String source=readSource(srcFileName);
+  if (!source.startsWith("//>")) throw "first line should be //>destinationFileName";
+  int n=srcFileName.lastIndexOf("/");
+  
+  String dirName=n>=0?srcFileName.substring(0,n):".";
+  int eolIndex=source.indexOf("\n");
+  String dstFileName = dirName+"/"+source.substring(3, eolIndex).trim();
+  print("preprocessing $srcFileName ->  $dstFileName");
+  if (dstFileName.contains("proto_")) throw "output file name $dstFileName is probably a mistake"; 
   //new File("c:/temp/newfile.txt").writeAsStringSync(source);
   var gen=new Generator();
   List<Slice> protos = findPrototypes(source); 
@@ -157,5 +170,13 @@ generate(fileName) {
     lastPos=proto.end;
   }
   newSource.write(source.substring(lastPos));
-  new File(fileName).writeAsStringSync(newSource.toString());
+  var lines=newSource.toString().split("\n");
+  var newLines=[];
+  newLines.add("//generated from prototype file $srcFileName");
+  lines.forEach((line) {
+    if (line.contains("//-") || line.contains("//>")) return;
+    if (line.contains("//+")) line=line.replaceAll("//+","");
+    newLines.add(line);
+  });
+  new File(dstFileName).writeAsStringSync(newLines.join("\n"));
 }

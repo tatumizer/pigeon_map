@@ -10,3 +10,4 @@ part 'pigeon_struct.dart';
 part 'pigeonson.dart';
 part 'generator.dart';
 part 'json_support.dart';
+

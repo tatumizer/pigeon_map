@@ -1,6 +1,7 @@
+//generated from prototype file test/proto_stuff.dart
 import '../lib/pigeon.dart';
 import "dart:typed_data";
-
+//test
 var pigeonTypeCatalog = {
   "Stuff" : new SerializationMetadata("Stuff", () => new Stuff(), null, 0),
   "DateTime" : new SerializationMetadata("DateTime", null, null, 1),
@@ -49,8 +50,4 @@ class Stuff extends PigeonStruct {
   void set x(double val) => setValue(11,val);
 }
 
-
-main() {
-  generate("stuff.dart");
- 
-}
+
