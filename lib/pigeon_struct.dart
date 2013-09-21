@@ -50,12 +50,12 @@ class PigeonStructMetadata extends NameSet {
     return t.substring(n+1);
     
   }
-  _extractGeneric(t, prefix, code) {
+  static _extractGeneric(t, prefix, code) {
     int end=t.lastIndexOf(">");
     String subtype=t.substring(prefix.length, end);
     return (_getTypeId(subtype)<<5)+code;
   }
-  _getTypeId(t) {
+  static _getTypeId(t) {
     if (t=="int") return _INT;
     else if (t=="bool") return _BOOL;
     else if (t=="double") return _DOUBLE;
@@ -80,6 +80,7 @@ class PigeonStructMetadata extends NameSet {
   }
   getSlotType(key)=> slotTypes[key];
   getSlotIndex(key)=> _getIndex(key);
+  static getTypeId(t) => _getTypeId(t);
 }
 class SerializationMetadata {
   String type;

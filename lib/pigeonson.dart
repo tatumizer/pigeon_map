@@ -69,8 +69,7 @@ class Pigeonson {
   writeInt(value) {
     _ensureSpace(5);
     writeType(_INT);
-    if (value>((1<<30)-1)) throw "ints bigger than 1<<31-1 not supported yet";
-    if (value<0) throw "negative ints not supported yet";
+    if (value>((1<<30)-1) || value<-(1<<30)) throw "ints larger than 31 bit supported yet";
     buf[bufPos]=value;
     buf[bufPos+1]=value>>8;
     buf[bufPos+2]=value>>16;
@@ -362,7 +361,10 @@ class PigeonsonParser {
   }
   readInt() {
     
-    var n = buf[bufPos] | (buf[bufPos+1]<<8) | (buf[bufPos+2]<<16) | (buf[bufPos+3]<<24);
+    var n = buf[bufPos] | (buf[bufPos+1]<<8) | (buf[bufPos+2]<<16);
+    var m = buf[bufPos+3];
+    n+=((m&0x7F)<<24);
+    if ((m&0x80)!=0) n-=(1<<31);
     bufPos+=4;
     return n;
   }

@@ -1,7 +1,6 @@
 //generated from prototype file proto_media.dart
 
-import '../lib/pigeon.dart';
-
+ import '../lib/pigeon.dart';
 var pigeonTypeCatalog = {
   "Message" : new SerializationMetadata("Message", () => new Message(), null, 0),
   "List<Image>" : new SerializationMetadata("List<Image>", () => new List<Image>(), "Image", 2),

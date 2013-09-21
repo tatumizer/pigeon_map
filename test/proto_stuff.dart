@@ -1,10 +1,12 @@
 //>stuff.dart
-import '../lib/pigeon.dart';
+import '../lib/generator.dart'; //-
+//+ import '../lib/pigeon.dart';
 import "dart:typed_data";
 //+//test
 @Prototype
 class Stuff {
   double x;
+  int i;
   Uint8List u8;
   Uint16List u16;
   Uint32List u32;

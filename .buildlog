@@ -1,0 +1,50 @@
+---
+build.dart --machine --changed=test\proto_stuff.dart
+preprocessing test/proto_stuff.dart ->  test/stuff.dart
+build.dart finished [267 ms]
+
+---
+build.dart --machine --changed=test\stuff.dart
+
+build.dart finished [105 ms]
+
+---
+build.dart --machine --changed=test\proto_stuff.dart --changed=test\stuff.dart
+preprocessing test/proto_stuff.dart ->  test/stuff.dart
+build.dart finished [109 ms]
+
+---
+build.dart --machine --changed=test\stuff.dart
+
+build.dart finished [63 ms]
+
+---
+build.dart --machine --changed=test\stuff.dart
+
+build.dart finished [177 ms]
+
+---
+build.dart --machine --changed= (Alex-HP's conflicted copy 2013-09-06).buildlog
+
+build.dart finished [122 ms]
+
+---
+build.dart --machine --changed= (CA-TO-TBA's conflicted copy 2013-09-06).buildlog
+
+build.dart finished [63 ms]
+
+---
+build.dart --machine --changed= (CA-TO-TBA's conflicted copy 2013-09-06).buildlog
+
+build.dart finished [107 ms]
+
+---
+build.dart --machine --changed=test\proto_stuff.dart
+preprocessing test/proto_stuff.dart ->  test/stuff.dart
+build.dart finished [140 ms]
+
+---
+build.dart --machine --changed=test\stuff.dart
+
+build.dart finished [63 ms]
+

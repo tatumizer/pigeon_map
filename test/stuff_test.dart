@@ -1,5 +1,4 @@
 import "package:unittest/unittest.dart";
-import "dart:math";
 import "../lib/pigeon.dart";
 import "stuff.dart";
 import "dart:typed_data";
@@ -11,6 +10,7 @@ init(List list, num initValue) {
 class StuffTest {
   static checkAll(s, s1) {
     expect(s1.x.runtimeType.toString(), equals("double"));
+    expect(s1.i.runtimeType.toString(), equals("int"));
     expect(s1.u8.runtimeType.toString(), equals("Uint8List"));
     expect(s1.i8.runtimeType.toString(), equals("Int8List"));
     expect(s1.u16.runtimeType.toString(), equals("Uint16List"));
@@ -27,6 +27,7 @@ class StuffTest {
   static testMain() {
     Stuff s=new Stuff();
     s.x=12345.67890;
+    s.i=-1234567;
     s.u8=init(new Uint8List(2), 0);
     s.u16=init(new Uint16List(256), 25);
     s.u32=init(new Uint32List(3), 100);

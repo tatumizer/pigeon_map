@@ -125,8 +125,8 @@ Code generation is simple: create a file containing prototypes of your data stru
 
 ```javascript
 //>person.dart  // first line should start with //> 
-// file proto_person.dart
-import 'pigeon.dart';
+import '../lib/generator.dart'; //-
+//+ import '../lib/pigeon.dart';
 @Prototype
 class Person {
   String firstName;
@@ -212,7 +212,7 @@ If you don't like pressing CTRL/R for generation, you can include preprocessing 
 
 ```javascript
 import 'dart:io';
-import "lib/pigeon.dart";
+import "lib/generator.dart";
 
 void main() {
   for (String arg in new Options().arguments) {

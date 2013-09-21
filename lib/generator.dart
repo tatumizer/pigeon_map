@@ -1,5 +1,14 @@
 
-part of pigeon;
+//import "./pigeon.dart";
+import "dart:io";
+import "dart:collection";
+
+// copy-paste from json_sypport!!!
+// FIXIT!
+const _PIGEON_MAP_CAT=0;
+const _PRIMITIVE_CAT=1;
+const _LIST_CAT=2;
+const _GENERIC_MAP_CAT=3;
 
 const Prototype = 42;
 String readSource(fileName) {
