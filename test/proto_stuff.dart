@@ -1,5 +1,5 @@
 //>stuff.dart
-import '../lib/generator.dart'; //-
+import '../lib/src/generator.dart'; //-
 //+ import '../lib/pigeon.dart';
 import "dart:typed_data";
 //+//test

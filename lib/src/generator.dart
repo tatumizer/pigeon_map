@@ -1,9 +1,9 @@
 
-//import "./pigeon.dart";
+
 import "dart:io";
 import "dart:collection";
 
-// copy-paste from json_sypport!!!
+// copy-paste from json_support!!!
 // FIXIT!
 const _PIGEON_MAP_CAT=0;
 const _PRIMITIVE_CAT=1;

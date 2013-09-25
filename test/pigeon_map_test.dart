@@ -8,7 +8,7 @@
 
 import "package:unittest/unittest.dart";
 import "dart:math";
-import "../lib/pigeon.dart";
+import "package:pigeon_map/pigeon.dart";
 
 class MapTest {
 

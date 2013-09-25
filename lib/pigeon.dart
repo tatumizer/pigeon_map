@@ -5,8 +5,8 @@ import "dart:typed_data";
 
 import "dart:json";
 
-part 'pigeon_map.dart';
-part 'pigeon_struct.dart';
-part 'pigeonson.dart';
-part 'json_support.dart';
+part 'src/pigeon_map.dart';
+part 'src/pigeon_struct.dart';
+part 'src/pigeonson.dart';
+part 'src/json_support.dart';
 

@@ -1,6 +1,6 @@
 import "dart:json";
 import 'media.dart';
-import '../lib/pigeon.dart';
+import "package:pigeon_map/pigeon.dart";
 import "dart:typed_data";
 String jsonString=r"""{
 "media" : {

@@ -1,6 +1,6 @@
 //>media.dart
 
-import '../lib/generator.dart'; //-
+import '../lib/src/generator.dart'; //-
 //+ import '../lib/pigeon.dart';
 @Prototype
 class Message {

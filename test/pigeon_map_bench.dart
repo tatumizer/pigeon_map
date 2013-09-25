@@ -2,7 +2,7 @@
 // and native map. However, the ratio of timings would obviously be different if each had to compute hash code (pigeon will still be faster, but
 // less dramatically so).
 
-import "../lib/pigeon.dart";
+import "package:pigeon_map/pigeon.dart";
 import "dart:math";
 
 String getRandomString(int len) {
