@@ -88,8 +88,15 @@ class PigeonMap implements Map<String, dynamic> {
   int _length = -1;
   List _values;
 
-  PigeonMap(this._nameSet) {
-    _values = new List.filled(_nameSet.length, _undefined);
+  PigeonMap(this._nameSet, {defaultValues:null}) {
+    if (defaultValues==null)
+      _values = new List.filled(_nameSet.length, _undefined);
+    else {
+      _values = new List(_nameSet.length);
+      _values.setRange(0, _values.length, defaultValues);
+      
+    }  
+    
   }
   _keyError(key) => throw new ArgumentError("name '$key' is not in the NameSet");
   get nameSet => _nameSet;

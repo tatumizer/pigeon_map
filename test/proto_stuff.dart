@@ -6,7 +6,8 @@ import "dart:typed_data";
 @Prototype
 class Stuff {
   double x;
-  int i;
+  int i = 0;
+  String str="abracadabra";
   Uint8List u8;
   Uint16List u16;
   Uint32List u32;

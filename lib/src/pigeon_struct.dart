@@ -3,7 +3,7 @@ part of pigeon;
 
 class PigeonStruct extends PigeonMap {
   
-  PigeonStruct(metadata): super(metadata){ }
+  PigeonStruct(metadata, defaultValues): super(metadata, defaultValues: defaultValues){ }
   setValue(n,val){_values[n]=val;}
   getValue(n) { var v= _values[n]; return identical(v, PigeonMap._undefined) ? null :v; }
   String toJsonString() {

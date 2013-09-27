@@ -28,7 +28,8 @@ class Slice {
 class Attribute {
   String type;
   String name;
-  Attribute(this.name,this.type);
+  String initValue;
+  Attribute(this.name,this.type,this.initValue);
   toString() => "{'type': '$type', 'name': '$name'}";
 }
 class Proto {
@@ -44,9 +45,9 @@ class ClassDef {
     var regexp1=new RegExp(r"class\s+([\w\d_]+)\s*{");
     cd.name=regexp1.firstMatch(str)[1];
     str=str.substring(regexp1.firstMatch(str)[0].length+1);
-    var regexp2=new RegExp(r"\n\s*(\S+)\s+([^;]+);", multiLine:true);
+    var regexp2=new RegExp(r"\n\s*(\S+)\s+([^=;\s]+)\s*(=[^;]+)?;", multiLine:true);
     for (Match match in regexp2.allMatches(str)) {
-      cd.attributes.add(new Attribute(match[2], match[1]));
+      cd.attributes.add(new Attribute(match[2].trim(), match[1].trim(), match[3]==null?null:match[3].substring(1).trim()));
     }
     return cd;
   }
@@ -120,9 +121,9 @@ class Generator {
   }
   addClass(ClassDef classDef) {
     classDef.sortAttributes();
-    var names=new List.from(classDef.attributes.map((a)=>a.name));
-    names.sort((a, b) => a.compareTo(b));
-    names=names.map((x)=>'"$x"');
+    //var names=new List.from(classDef.attributes.map((a)=>a.name));
+    //names.sort((a, b) => a.compareTo(b));
+    //names=names.map((x)=>'"$x"');
     var className=classDef.name;
     addMetadata(classDef.name);
     for (Attribute attr in classDef.attributes) {
@@ -134,8 +135,21 @@ class Generator {
 
     sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",pigeonTypeCatalog);');
     sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",pigeonTypeCatalog);');
-    
-    sb.writeln("  $className() : super(_metadata_${className}) {}");
+    // compute list of default values for initialiation
+    var defaultValues=[], refToDefaultValues="_defaultValues";
+    bool hasExpression=false;
+    for (Attribute attr in classDef.attributes) {
+      var initValue=attr.initValue;
+      hasExpression=hasExpression || (initValue!=null && initValue.contains("("));
+      defaultValues.add(initValue);
+    }
+    if (!hasExpression) {
+      sb.writeln("  static final _defaultValues=$defaultValues;");
+    } else {
+      sb.writeln("  static _defaultValues()=>$defaultValues;");
+      refToDefaultValues+="()";
+    }
+    sb.writeln("  $className() : super(_metadata_${className},$refToDefaultValues) {}");
     int i=0;
     for (Attribute attr in classDef.attributes) {
       

@@ -131,7 +131,7 @@ import '../lib/generator.dart'; //-
 class Person {
   String firstName;
   String lastName;
-  int yearOfBirth;
+  int yearOfBirth = 2000;
 }
 // other @Prototype classes
 main() {        //- lines that contain //- will not be copied into generated file
@@ -153,6 +153,8 @@ Important rules:
 
 4. Lines that start with "//+" will be stripped of "//+" and copied into generated file. E.g., if generated file is supposed to be part of library,
 include line `//+part of mylibrary;` in the source
+
+5. Initializers are supported : in the example above, yearOfBirth is 2000 by default; "default default" is null, as usual.
   
 Please see more complex example in test/proto_media.dart. When you run this file, it generates test/media.dart.
 
