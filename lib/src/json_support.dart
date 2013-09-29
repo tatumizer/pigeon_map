@@ -1,9 +1,9 @@
 part of pigeon;
 
-const _PIGEON_MAP_CAT=0;
-const _PRIMITIVE_CAT=1;
-const _LIST_CAT=2;
-const _GENERIC_MAP_CAT=3;
+const int _PIGEON_MAP_CAT=0;
+const int _PRIMITIVE_CAT=1;
+const int _LIST_CAT=2;
+const int _GENERIC_MAP_CAT=3;
 
 jsonString2Pigeon(jsonString, type, catalog) {
   var listener=new PigeonJsonListener(type, catalog);

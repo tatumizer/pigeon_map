@@ -1,26 +1,26 @@
 part of pigeon;
 
-const _INT =1;
-const _BOOL =2;
-const _DOUBLE =3;
-const _STRING1 =4;
-const _PIGEON =5;
-const _LIST_GENERIC=6;
-const _LIST_STRING =7;
-const _LIST_INT =8;
-const _MAP_GENERIC=9;
-const _STRING2 =10;
-const _DATE_TIME =11;
-const _UINT8_LIST=12;
-const _UINT16_LIST=13;
-const _INT8_LIST=14;
-const _INT16_LIST=15;
-const _UINT32_LIST=16;
-const _INT32_LIST=17;
-const _UINT64_LIST=18;
-const _INT64_LIST=19;
-const _FLOAT32_LIST=20;
-const _FLOAT64_LIST=21;
+const int _INT =1;
+const int _BOOL =2;
+const int _DOUBLE =3;
+const int _STRING1 =4;
+const int _PIGEON =5;
+const int _LIST_GENERIC=6;
+const int _LIST_STRING =7;
+const int _LIST_INT =8;
+const int _MAP_GENERIC=9;
+const int _STRING2 =10;
+const int _DATE_TIME =11;
+const int _UINT8_LIST=12;
+const int _UINT16_LIST=13;
+const int _INT8_LIST=14;
+const int _INT16_LIST=15;
+const int _UINT32_LIST=16;
+const int _INT32_LIST=17;
+const int _UINT64_LIST=18;
+const int _INT64_LIST=19;
+const int _FLOAT32_LIST=20;
+const int _FLOAT64_LIST=21;
 
 PigeonStruct pgsonMessage2Pigeon(bytes, type, catalog) => new PigeonsonParser(type, catalog).parse(bytes);
 class Pigeonson {

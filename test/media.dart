@@ -1,7 +1,7 @@
 //generated from prototype file proto_media.dart
 
  import '../lib/pigeon.dart';
-var pigeonTypeCatalog = {
+final _media_pigeonTypeCatalog = {
   "Message" : new SerializationMetadata("Message", () => new Message(), null, 0),
   "List<Image>" : new SerializationMetadata("List<Image>", () => new List<Image>(), "Image", 2),
   "Image" : new SerializationMetadata("Image", () => new Image(), null, 0),
@@ -11,23 +11,23 @@ var pigeonTypeCatalog = {
   "List<String>" : new SerializationMetadata("List<String>", () => new List<String>(), "String", 2),
 };
 
-var _metadata_Message = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Message', 'attributes': [{'type': 'List<Image>', 'name': 'images'}, {'type': 'Media', 'name': 'media'}]});
 class Message extends PigeonStruct {
-  factory Message.parseJsonString(str) => jsonString2Pigeon(str, "Message",pigeonTypeCatalog);
-  factory Message.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Message",pigeonTypeCatalog);
+  static final _metadata = new PigeonStructMetadata(_media_pigeonTypeCatalog,{'type': 'Message', 'attributes': [{'type': 'List<Image>', 'name': 'images'}, {'type': 'Media', 'name': 'media'}]});
+  factory Message.parseJsonString(str) => jsonString2Pigeon(str, "Message",_media_pigeonTypeCatalog);
+  factory Message.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Message",_media_pigeonTypeCatalog);
   static final _defaultValues=[null, null];
-  Message() : super(_metadata_Message,_defaultValues) {}
+  Message() : super(_metadata,_defaultValues) {}
   List<Image> get images => getValue(0);
   void set images(List<Image> val) => setValue(0,val);
   Media get media => getValue(1);
   void set media(Media val) => setValue(1,val);
 }
-var _metadata_Media = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Media', 'attributes': [{'type': 'int', 'name': 'bitrate'}, {'type': 'String', 'name': 'copyright'}, {'type': 'int', 'name': 'duration'}, {'type': 'String', 'name': 'format'}, {'type': 'int', 'name': 'height'}, {'type': 'List<String>', 'name': 'persons'}, {'type': 'String', 'name': 'player'}, {'type': 'int', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
 class Media extends PigeonStruct {
-  factory Media.parseJsonString(str) => jsonString2Pigeon(str, "Media",pigeonTypeCatalog);
-  factory Media.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Media",pigeonTypeCatalog);
+  static final _metadata = new PigeonStructMetadata(_media_pigeonTypeCatalog,{'type': 'Media', 'attributes': [{'type': 'int', 'name': 'bitrate'}, {'type': 'String', 'name': 'copyright'}, {'type': 'int', 'name': 'duration'}, {'type': 'String', 'name': 'format'}, {'type': 'int', 'name': 'height'}, {'type': 'List<String>', 'name': 'persons'}, {'type': 'String', 'name': 'player'}, {'type': 'int', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
+  factory Media.parseJsonString(str) => jsonString2Pigeon(str, "Media",_media_pigeonTypeCatalog);
+  factory Media.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Media",_media_pigeonTypeCatalog);
   static final _defaultValues=[null, null, null, null, null, null, null, null, null, null, null];
-  Media() : super(_metadata_Media,_defaultValues) {}
+  Media() : super(_metadata,_defaultValues) {}
   int get bitrate => getValue(0);
   void set bitrate(int val) => setValue(0,val);
   String get copyright => getValue(1);
@@ -51,12 +51,12 @@ class Media extends PigeonStruct {
   int get width => getValue(10);
   void set width(int val) => setValue(10,val);
 }
-var _metadata_Image = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Image', 'attributes': [{'type': 'int', 'name': 'height'}, {'type': 'String', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
 class Image extends PigeonStruct {
-  factory Image.parseJsonString(str) => jsonString2Pigeon(str, "Image",pigeonTypeCatalog);
-  factory Image.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Image",pigeonTypeCatalog);
+  static final _metadata = new PigeonStructMetadata(_media_pigeonTypeCatalog,{'type': 'Image', 'attributes': [{'type': 'int', 'name': 'height'}, {'type': 'String', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
+  factory Image.parseJsonString(str) => jsonString2Pigeon(str, "Image",_media_pigeonTypeCatalog);
+  factory Image.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Image",_media_pigeonTypeCatalog);
   static final _defaultValues=[null, null, null, null, null];
-  Image() : super(_metadata_Image,_defaultValues) {}
+  Image() : super(_metadata,_defaultValues) {}
   int get height => getValue(0);
   void set height(int val) => setValue(0,val);
   String get size => getValue(1);

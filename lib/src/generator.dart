@@ -5,12 +5,12 @@ import "dart:collection";
 
 // copy-paste from json_support!!!
 // FIXIT!
-const _PIGEON_MAP_CAT=0;
-const _PRIMITIVE_CAT=1;
-const _LIST_CAT=2;
-const _GENERIC_MAP_CAT=3;
+const int _PIGEON_MAP_CAT=0;
+const int _PRIMITIVE_CAT=1;
+const int _LIST_CAT=2;
+const int _GENERIC_MAP_CAT=3;
 
-const Prototype = 42;
+const int Prototype = 42;
 String readSource(fileName) {
   return new File(fileName).readAsStringSync();
 }
@@ -109,6 +109,11 @@ addMetadata(String type) {
 
 class Generator {
   var sb=new StringBuffer();
+  var catalogName;
+  Generator(fileName) {
+    var n = fileName.indexOf(".");
+    catalogName="_${fileName.substring(0, n>0? n : fileName.length)}_pigeonTypeCatalog";;
+  }
   catalogToString() {
     
     var sb = new StringBuffer();
@@ -130,11 +135,11 @@ class Generator {
       addMetadata(attr.type);
     }
     
-    sb.writeln("var _metadata_${className} = new PigeonStructMetadata(pigeonTypeCatalog,$classDef);");
+    
     sb.writeln("class $className extends PigeonStruct {");
-
-    sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",pigeonTypeCatalog);');
-    sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",pigeonTypeCatalog);');
+    sb.writeln("  static final _metadata = new PigeonStructMetadata($catalogName,$classDef);");
+    sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",$catalogName);');
+    sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",$catalogName);');
     // compute list of default values for initialiation
     var defaultValues=[], refToDefaultValues="_defaultValues";
     bool hasExpression=false;
@@ -149,7 +154,7 @@ class Generator {
       sb.writeln("  static _defaultValues()=>$defaultValues;");
       refToDefaultValues+="()";
     }
-    sb.writeln("  $className() : super(_metadata_${className},$refToDefaultValues) {}");
+    sb.writeln("  $className() : super(_metadata,$refToDefaultValues) {}");
     int i=0;
     for (Attribute attr in classDef.attributes) {
       
@@ -159,7 +164,7 @@ class Generator {
     }
     sb.writeln("}");
   }
-  toString() => "var pigeonTypeCatalog = ${catalogToString()}\n$sb";
+  toString() => "final ${catalogName} = ${catalogToString()}\n$sb";
 }
 generate(String fileName) {
   throw "DEPRECATED! Use 'preprocess'method instead- see README"; 
@@ -170,14 +175,17 @@ preprocess([String srcFileName]) {
   String source=readSource(srcFileName);
   if (!source.startsWith("//>")) throw "first line should be //>destinationFileName";
   int n=srcFileName.lastIndexOf("/");
+  String dirName=".";
+  if (n>=0) dirName=srcFileName.substring(0, n); 
   
-  String dirName=n>=0?srcFileName.substring(0,n):".";
   int eolIndex=source.indexOf("\n");
-  String dstFileName = dirName+"/"+source.substring(3, eolIndex).trim();
+  var dstFileName=(dirName +"/"+ source.substring(3, eolIndex).trim()).replaceAll("\\","/");
   print("preprocessing $srcFileName ->  $dstFileName");
   if (dstFileName.contains("proto_")) throw "output file name $dstFileName is probably a mistake"; 
   //new File("c:/temp/newfile.txt").writeAsStringSync(source);
-  var gen=new Generator();
+  var m = dstFileName.lastIndexOf("/");
+  var simpleFileName = dstFileName.substring(m>=0?m+1 : 0);
+  var gen=new Generator(simpleFileName);
   List<Slice> protos = findPrototypes(source); 
   for (Slice proto in protos) {
      var classDef=ClassDef.parse(proto.str);  

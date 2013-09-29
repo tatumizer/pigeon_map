@@ -1,8 +1,8 @@
-//generated from prototype file proto_stuff.dart
+//generated from prototype file C:/Users/Alex/Dropbox/pigeon_map/test/proto_stuff.dart
  import '../lib/pigeon.dart';
 import "dart:typed_data";
 //test
-var pigeonTypeCatalog = {
+final _stuff_pigeonTypeCatalog = {
   "Stuff" : new SerializationMetadata("Stuff", () => new Stuff(), null, 0),
   "DateTime" : new SerializationMetadata("DateTime", null, null, 1),
   "Float32List" : new SerializationMetadata("Float32List", () => new List<double>(), "int", 1),
@@ -20,12 +20,12 @@ var pigeonTypeCatalog = {
   "double" : new SerializationMetadata("double", null, null, 1),
 };
 
-var _metadata_Stuff = new PigeonStructMetadata(pigeonTypeCatalog,{'type': 'Stuff', 'attributes': [{'type': 'DateTime', 'name': 'dt'}, {'type': 'Float32List', 'name': 'f32'}, {'type': 'Float64List', 'name': 'f64'}, {'type': 'int', 'name': 'i'}, {'type': 'Int16List', 'name': 'i16'}, {'type': 'Int32List', 'name': 'i32'}, {'type': 'Int64List', 'name': 'i64'}, {'type': 'Int8List', 'name': 'i8'}, {'type': 'String', 'name': 'str'}, {'type': 'Uint16List', 'name': 'u16'}, {'type': 'Uint32List', 'name': 'u32'}, {'type': 'Uint64List', 'name': 'u64'}, {'type': 'Uint8List', 'name': 'u8'}, {'type': 'double', 'name': 'x'}]});
 class Stuff extends PigeonStruct {
-  factory Stuff.parseJsonString(str) => jsonString2Pigeon(str, "Stuff",pigeonTypeCatalog);
-  factory Stuff.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Stuff",pigeonTypeCatalog);
+  static final _metadata = new PigeonStructMetadata(_stuff_pigeonTypeCatalog,{'type': 'Stuff', 'attributes': [{'type': 'DateTime', 'name': 'dt'}, {'type': 'Float32List', 'name': 'f32'}, {'type': 'Float64List', 'name': 'f64'}, {'type': 'int', 'name': 'i'}, {'type': 'Int16List', 'name': 'i16'}, {'type': 'Int32List', 'name': 'i32'}, {'type': 'Int64List', 'name': 'i64'}, {'type': 'Int8List', 'name': 'i8'}, {'type': 'String', 'name': 'str'}, {'type': 'Uint16List', 'name': 'u16'}, {'type': 'Uint32List', 'name': 'u32'}, {'type': 'Uint64List', 'name': 'u64'}, {'type': 'Uint8List', 'name': 'u8'}, {'type': 'double', 'name': 'x'}]});
+  factory Stuff.parseJsonString(str) => jsonString2Pigeon(str, "Stuff",_stuff_pigeonTypeCatalog);
+  factory Stuff.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "Stuff",_stuff_pigeonTypeCatalog);
   static final _defaultValues=[null, null, null, 0, null, null, null, null, "abracadabra", null, null, null, null, null];
-  Stuff() : super(_metadata_Stuff,_defaultValues) {}
+  Stuff() : super(_metadata,_defaultValues) {}
   DateTime get dt => getValue(0);
   void set dt(DateTime val) => setValue(0,val);
   Float32List get f32 => getValue(1);

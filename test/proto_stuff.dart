@@ -22,5 +22,5 @@ class Stuff {
 }
 
 main() { //-
-  preprocess(); //-
+  preprocess("C:/Users/Alex/Dropbox/pigeon_map/test/proto_stuff.dart"); //-
 } //-

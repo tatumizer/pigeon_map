@@ -108,7 +108,7 @@ testPigeonsonParse(iterations) {
 var jsonObject = parse(jsonString);
 var pigeonObject=new Message.parseJsonString(jsonString);
 var pigeonson = new Pigeonson().serialize(pigeonObject);
-var revPigeonObject = new PigeonsonParser("Message", pigeonTypeCatalog).parse(pigeonson);
+var revPigeonObject = new Message.fromPgsonMessage(pigeonson);
 main() {
 
   print("source length ${jsonString.length}");
