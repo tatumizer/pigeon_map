@@ -132,6 +132,9 @@ class Person {
   String firstName;
   String lastName;
   int yearOfBirth = 2000;
+  //asis+
+  String toString() => "$firstName $lastName ($yearOfBirth)";
+  //asis-
 }
 // other @Prototype classes
 main() {        //- lines that contain //- will not be copied into generated file
@@ -155,6 +158,8 @@ Important rules:
 include line `//+part of mylibrary;` in the source
 
 5. Initializers are supported : in the example above, yearOfBirth is 2000 by default; "default default" is null, as usual.
+
+6. If you want to add methods to the generated class, place them between `//asis+` and `//asis-` comments
   
 Please see more complex example in test/proto_media.dart. When you run this file, it generates test/media.dart.
 

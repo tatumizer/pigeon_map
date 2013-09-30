@@ -19,6 +19,7 @@ class Stuff {
   Int16List i16;
   Int32List i32;
   Int64List i64;
+
 }
 
 main() { //-

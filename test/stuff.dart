@@ -54,6 +54,7 @@ class Stuff extends PigeonStruct {
   void set u8(Uint8List val) => setValue(12,val);
   double get x => getValue(13);
   void set x(double val) => setValue(13,val);
+
 }
 
 

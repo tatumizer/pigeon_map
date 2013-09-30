@@ -21,6 +21,12 @@ class Message extends PigeonStruct {
   void set images(List<Image> val) => setValue(0,val);
   Media get media => getValue(1);
   void set media(Media val) => setValue(1,val);
+
+  String toString() => "Tetsing asis: Message object";
+  String testAsIs() {
+    return "Message";
+  }
+  
 }
 class Media extends PigeonStruct {
   static final _metadata = new PigeonStructMetadata(_media_pigeonTypeCatalog,{'type': 'Media', 'attributes': [{'type': 'int', 'name': 'bitrate'}, {'type': 'String', 'name': 'copyright'}, {'type': 'int', 'name': 'duration'}, {'type': 'String', 'name': 'format'}, {'type': 'int', 'name': 'height'}, {'type': 'List<String>', 'name': 'persons'}, {'type': 'String', 'name': 'player'}, {'type': 'int', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
@@ -50,6 +56,12 @@ class Media extends PigeonStruct {
   void set uri(String val) => setValue(9,val);
   int get width => getValue(10);
   void set width(int val) => setValue(10,val);
+
+  String toString() => "Tetsing asis: Media object";
+  String testAsIs() {
+    return "Media";
+  }
+  
 }
 class Image extends PigeonStruct {
   static final _metadata = new PigeonStructMetadata(_media_pigeonTypeCatalog,{'type': 'Image', 'attributes': [{'type': 'int', 'name': 'height'}, {'type': 'String', 'name': 'size'}, {'type': 'String', 'name': 'title'}, {'type': 'String', 'name': 'uri'}, {'type': 'int', 'name': 'width'}]});
@@ -67,6 +79,12 @@ class Image extends PigeonStruct {
   void set uri(String val) => setValue(3,val);
   int get width => getValue(4);
   void set width(int val) => setValue(4,val);
+
+  String toString() => "Tetsing asis: Image object";
+  String testAsIs() {
+    return "Image";
+  }
+  
 }
 
 

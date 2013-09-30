@@ -6,6 +6,12 @@ import '../lib/src/generator.dart'; //-
 class Message {
   Media media;
   List<Image> images;
+  //asis+
+  String toString() => "Tetsing asis: Message object";
+  String testAsIs() {
+    return "Message";
+  }
+  //asis-
 }
 @Prototype
 class Media {
@@ -20,6 +26,12 @@ class Media {
   List<String> persons;
   String player;
   String copyright;
+  //asis+
+  String toString() => "Tetsing asis: Media object";
+  String testAsIs() {
+    return "Media";
+  }
+  //asis-
 }
 @Prototype
 class Image {
@@ -28,6 +40,12 @@ class Image {
   int width;
   int height;
   String size;
+  //asis+
+  String toString() => "Tetsing asis: Image object";
+  String testAsIs() {
+    return "Image";
+  }
+  //asis-
 }
 
 

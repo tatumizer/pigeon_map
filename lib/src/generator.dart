@@ -63,7 +63,9 @@ class _SerializationMetadata {
   toString() => "$type constructor=$constructor child=$childType";
 }
 var _pigeonTypeCatalog = new LinkedHashMap<String,_SerializationMetadata>();
-List<Slice> findPrototypes(str) {
+List<Slice> findPrototypes(String str) {
+
+  
   var slices=new List<Slice>();
   var regexp=new RegExp(r"@Prototype\s+class\s+\S+\s*\{[^\}]+\}", multiLine:true);
   for (Match match in regexp.allMatches(str)) {
@@ -109,10 +111,10 @@ addMetadata(String type) {
 
 class Generator {
   var sb=new StringBuffer();
-  var catalogName;
+  var asisRegexp;
   Generator(fileName) {
     var n = fileName.indexOf(".");
-    catalogName="_${fileName.substring(0, n>0? n : fileName.length)}_pigeonTypeCatalog";;
+    asisRegexp="_${fileName.substring(0, n>0? n : fileName.length)}_pigeonTypeCatalog";;
   }
   catalogToString() {
     
@@ -124,7 +126,7 @@ class Generator {
     sb.writeln("};");
     return sb.toString().replaceAll('"null"',"null");
   }
-  addClass(ClassDef classDef) {
+  addClass(ClassDef classDef, String asisFragment) {
     classDef.sortAttributes();
     //var names=new List.from(classDef.attributes.map((a)=>a.name));
     //names.sort((a, b) => a.compareTo(b));
@@ -137,9 +139,9 @@ class Generator {
     
     
     sb.writeln("class $className extends PigeonStruct {");
-    sb.writeln("  static final _metadata = new PigeonStructMetadata($catalogName,$classDef);");
-    sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",$catalogName);');
-    sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",$catalogName);');
+    sb.writeln("  static final _metadata = new PigeonStructMetadata($asisRegexp,$classDef);");
+    sb.writeln('  factory $className.parseJsonString(str) => jsonString2Pigeon(str, "$className",$asisRegexp);');
+    sb.writeln('  factory $className.fromPgsonMessage(bytes) => pgsonMessage2Pigeon(bytes, "$className",$asisRegexp);');
     // compute list of default values for initialiation
     var defaultValues=[], refToDefaultValues="_defaultValues";
     bool hasExpression=false;
@@ -162,12 +164,21 @@ class Generator {
       sb.writeln("  void set ${attr.name}(${attr.type} val) => setValue($i,val);");
       i++;
     }
+    sb.writeln(asisFragment);
     sb.writeln("}");
   }
-  toString() => "final ${catalogName} = ${catalogToString()}\n$sb";
+  toString() => "final ${asisRegexp} = ${catalogToString()}\n$sb";
 }
 generate(String fileName) {
   throw "DEPRECATED! Use 'preprocess'method instead- see README"; 
+}
+collectAsIsFragments(slice, asisSlices) {
+  StringBuffer sb=new StringBuffer();
+  for (var asis in asisSlices) {
+    if (asis.start>=slice.start && asis.end <= slice.end)
+      sb.write(asis.str);
+  }
+  return sb.toString();
 }
 preprocess([String srcFileName]) {
   if (srcFileName==null) srcFileName=Platform.script;
@@ -186,15 +197,28 @@ preprocess([String srcFileName]) {
   var m = dstFileName.lastIndexOf("/");
   var simpleFileName = dstFileName.substring(m>=0?m+1 : 0);
   var gen=new Generator(simpleFileName);
-  List<Slice> protos = findPrototypes(source); 
-  for (Slice proto in protos) {
+  var asisRegexp=new RegExp(r"//asis[+]([\s\S]*?)//asis[-]", multiLine: true);
+  var asisSlices=new List<Slice>();
+  
+  var codeUnits=new List.from(source.codeUnits);
+  for (Match match in asisRegexp.allMatches(source)) {
+    
+    Slice s=new Slice(match.start, match.end, match[1]);
+    asisSlices.add(s);
+    for (int i=match.start; i<match.end; i++)
+      codeUnits[i]=" ".codeUnitAt(0);
+  }
+  source = new String.fromCharCodes(codeUnits);
+  
+  List<Slice> protoSlices = findPrototypes(source); 
+  for (Slice proto in protoSlices) {
      var classDef=ClassDef.parse(proto.str);  
-     gen.addClass(classDef);
+     gen.addClass(classDef, collectAsIsFragments(proto,asisSlices));
   }
   //print(gen);
   var newSource = new StringBuffer();
   int lastPos=0;
-  for (var proto in protos) {
+  for (var proto in protoSlices) {
     newSource.write(source.substring(lastPos, proto.start));
     if (lastPos==0)
       newSource.write(gen.toString());
