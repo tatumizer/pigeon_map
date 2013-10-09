@@ -1,3 +1,7 @@
+Changelog
+=========
+- ver. 0.4.12: added support for noSuchAttribute - see text below for details
+ 
 Overview
 ========
 Pigeon library provides implementation of memory- and performance-efficient map-backed data structures. These structures are efficiently serializable with  no extra 
@@ -160,6 +164,9 @@ include line `//+part of mylibrary;` in the source
 5. Initializers are supported : in the example above, yearOfBirth is 2000 by default; "default default" is null, as usual.
 
 6. If you want to add methods to the generated class, place them between `//asis+` and `//asis-` comments
+
+7. You can (optionally) override noSuchAttribute method (place it in "asis" block), which is called if you try to access the key not defined in name set. 
+Function will be called with parameters `(String key, bool isSetter, dynamic value)`. By default, it throws IllegalArgumentException.
   
 Please see more complex example in test/proto_media.dart. When you run this file, it generates test/media.dart.
 

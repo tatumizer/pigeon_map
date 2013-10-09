@@ -55,6 +55,10 @@ class Stuff extends PigeonStruct {
   double get x => getValue(13);
   void set x(double val) => setValue(13,val);
 
+  noSuchAttribute(key, isSetter, value) {
+    return "$key $isSetter $value";
+  }
+  
 }
 
 

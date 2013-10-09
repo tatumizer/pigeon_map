@@ -46,6 +46,9 @@ class StuffTest {
     var pgsonBytes=s.toPgsonMessage();
     var s2=new Stuff.fromPgsonMessage(pgsonBytes);
     checkAll(s, s2);
+    expect(s["foo"]="bar", equals("bar")); // strange dart feature
+
+    expect(s["foo"], equals("foo false null"));
   }
 }
 

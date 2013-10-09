@@ -55,7 +55,7 @@ class NameSet {
     int n = _searchMode == _HASH ? _table[(key.hashCode >> _shift)&(_table.length-1)] :
             _searchMode == _LINEAR ? _getIndexByLinearSearch(key) :
             _getIndexByBinarySearch(key);  
-    // fast track for identical makes things faster in typical case        
+    // fast track for identical makes things faster in typical case 
     return n>=0 && (identical(_names[n], key) || _names[n] == key) ? n : -1;
   }
   int _getIndexByBinarySearch(String key) {
@@ -93,7 +93,7 @@ class PigeonMap implements Map<String, dynamic> {
       _values = new List.filled(_nameSet.length, _undefined);
     else {
       _values = new List(_nameSet.length);
-      _values.setRange(0, _values.length, defaultValues);
+      _values.setRange(0, _values.length, defaultValues, 0);
       
     }  
     
@@ -102,14 +102,14 @@ class PigeonMap implements Map<String, dynamic> {
   get nameSet => _nameSet;
   operator []=(String key, dynamic v) {
     int n = _nameSet._getIndex(key);
-    if (n<0) _keyError(key);
+    if (n<0) return noSuchAttribute(key, true, v);
     _values[n] = v;
     _length=-1;
   }
 
   operator [](String key) {
     int n = _nameSet._getIndex(key);
-    if (n<0) _keyError(key);
+    if (n<0) return noSuchAttribute(key, false, null);
     var v = _values[n];
     
     return identical(v, _undefined) ? null :v;
@@ -167,7 +167,7 @@ class PigeonMap implements Map<String, dynamic> {
   bool get isFast => _nameSet.isFast;
   putIfAbsent(String key, dynamic ifAbsent()) {
     int n = _nameSet._getIndex(key);
-    if (n<0) _keyError(key);
+    if (n<0) return noSuchAttribute(key, true, ifAbsent());
     var old=_values[n];
     if (identical(old, _undefined)) {
       _values[n] = ifAbsent();
@@ -193,4 +193,7 @@ class PigeonMap implements Map<String, dynamic> {
   }
 
   Iterable get values => _values.where((v) => !identical(v, _undefined));
+  noSuchAttribute(String key, bool isSetter, dynamic value) {
+    _keyError(key);
+  }
 }

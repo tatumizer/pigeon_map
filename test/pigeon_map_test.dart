@@ -35,6 +35,8 @@ class MapTest {
     }
     expect(0, equals(map.length));
     map.remove("value105");
+    expect(()=>map["asldkj"], throws);
+    expect(()=>map["asldkj"]=0, throws);
   }
   
   static void test(Map map) {

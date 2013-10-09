@@ -121,7 +121,7 @@ class PigeonJsonListener extends BuildJsonListener {
   void arrayElement() {
     List list = currentContainer;
     // heuristic 
-    if (value is List || (value is String && value.length>0 && value.codeUnitAt(0) <= 50))
+    if (value is List || (value is String && value.length>=18 && value.codeUnitAt(0) <= 50))
       value=_reviveObject(value, currentMetadata.childType);
     currentContainer.add(value);
     value = null;

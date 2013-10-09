@@ -61,6 +61,9 @@ class Media extends PigeonStruct {
   String testAsIs() {
     return "Media";
   }
+  noSuchAttribute(key, isSetter, value) {
+    print("attempt to access $key");
+  }
   
 }
 class Image extends PigeonStruct {

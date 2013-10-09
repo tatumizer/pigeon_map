@@ -31,6 +31,9 @@ class Media {
   String testAsIs() {
     return "Media";
   }
+  noSuchAttribute(key, isSetter, value) {
+    print("attempt to access $key");
+  }
   //asis-
 }
 @Prototype
