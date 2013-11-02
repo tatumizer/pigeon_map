@@ -2,6 +2,8 @@
  import '../lib/pigeon.dart';
 import "dart:typed_data";
 //test
+var invocationValue;
+
 final _stuff_pigeonTypeCatalog = {
   "Stuff" : new SerializationMetadata("Stuff", () => new Stuff(), null, 0),
   "DateTime" : new SerializationMetadata("DateTime", null, null, 1),
@@ -55,8 +57,11 @@ class Stuff extends PigeonStruct {
   double get x => getValue(13);
   void set x(double val) => setValue(13,val);
 
-  noSuchAttribute(key, isSetter, value) {
-    return "$key $isSetter $value";
+  noSuchAttribute(Invocation inv) {
+    invocationValue= inv.isSetter? inv.positionalArguments[0].toString() : null;
+    var result= "${inv.memberName} ${inv.isSetter} ${inv.positionalArguments.length}";
+    //print(result);
+    return result;
   }
   
 }

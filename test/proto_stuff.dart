@@ -3,6 +3,8 @@ import '../lib/src/generator.dart'; //-
 //+ import '../lib/pigeon.dart';
 import "dart:typed_data";
 //+//test
+var invocationValue;
+
 @Prototype
 class Stuff {
   double x;
@@ -20,8 +22,11 @@ class Stuff {
   Int32List i32;
   Int64List i64;
   //asis+
-  noSuchAttribute(key, isSetter, value) {
-    return "$key $isSetter $value";
+  noSuchAttribute(Invocation inv) {
+    invocationValue= inv.isSetter? inv.positionalArguments[0].toString() : null;
+    var result= "${inv.memberName} ${inv.isSetter} ${inv.positionalArguments.length}";
+    //print(result);
+    return result;
   }
   //asis-
 

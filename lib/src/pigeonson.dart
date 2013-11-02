@@ -546,7 +546,7 @@ class PigeonsonParser {
     int t=readType(type);
     if (t==0) return null;
     switch (t) {
-      case 0: return;
+      case 0: return null;
       case _INT: return readInt();
       case _DOUBLE: return readDouble();
       case _BOOL: return readBool();

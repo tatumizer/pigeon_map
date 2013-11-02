@@ -1,4 +1,4 @@
-import "dart:json";
+import "package:json/json.dart";
 import 'media.dart';
 import "package:pigeon_map/pigeon.dart";
 import "dart:typed_data";
@@ -14,8 +14,7 @@ String jsonString=r"""{
 "bitrate": 262144,
 "persons": ["Bill Gates", "Steve Jobs"],
 "player" : "Java",
-"copyright" : "None"
-
+"copyright" : "None" 
 },
 
 "images" : [
@@ -35,6 +34,8 @@ String jsonString=r"""{
 }
 ]
 }""";
+
+
 run(func, name) {
   const int ITERATIONS=100000;
   var iter=[100, 1000, 1000, ITERATIONS];

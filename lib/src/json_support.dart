@@ -72,7 +72,8 @@ class PigeonJsonListener extends BuildJsonListener {
   void propertyValue() {
     Map map = currentContainer;
     // heuristic first
-    if (value is List || (value is String && value.length>0 && value.codeUnitAt(0) <= 50))
+    if (currentContainer is PigeonStruct && (value is List || (value is String && value.length>0 && value.codeUnitAt(0) <= 50)) &&
+        currentContainer.nameSet.contains(key))
       value=_reviveObject(value, currentContainer.nameSet.getSlotType(key));
     //print("property value called for $currentType $value");
     map[key] = value;
@@ -93,15 +94,21 @@ class PigeonJsonListener extends BuildJsonListener {
   setCurrentType(String type) {
     if (type==currentType) return;
     currentType=type;
+    currentMetadata=null;
+    if (identical(type,"undefined")) return;
     currentMetadata=catalog[currentType];
     assert(currentMetadata!=null);
     //print("setting current type $currentType");
   }
   beginChildObject() {
+    if (currentMetadata==null) return;
     int cat=currentMetadata.category;
-    setCurrentType(cat==_PIGEON_MAP_CAT? currentContainer.nameSet.getSlotType(key) :
-        currentMetadata.childType);
-    currentContainer=currentMetadata.constructor();
+    setCurrentType(cat==_PIGEON_MAP_CAT? 
+        currentContainer.nameSet.contains(key) ? currentContainer.nameSet.getSlotType(key) : "undefined"
+        : currentMetadata.childType);
+    
+    currentContainer=currentMetadata!=null ? currentMetadata.constructor() : null;
+    
   }
   void beginObject() {
     //_print("beginObject");
@@ -113,15 +120,15 @@ class PigeonJsonListener extends BuildJsonListener {
       
     }  
     else beginChildObject();
-    /*
+    if (currentMetadata == null) currentContainer={}; // for "undefined" type only
     if (currentContainer is! Map)
-      throw "not a map $key";
-    */  
+      throw new UnsupportedError("attribute $key is not a Map");
+      
   }
   void arrayElement() {
-    List list = currentContainer;
     // heuristic 
-    if (value is List || (value is String && value.length>=18 && value.codeUnitAt(0) <= 50))
+    if (currentMetadata!=null && 
+          (value is List || (value is String && value.length>=18 && value.codeUnitAt(0) <= 50)))
       value=_reviveObject(value, currentMetadata.childType);
     currentContainer.add(value);
     value = null;
@@ -130,10 +137,10 @@ class PigeonJsonListener extends BuildJsonListener {
     //_print("beginArray");
     pushContainer();
     beginChildObject();
-    /*
+    if (currentMetadata==null) currentContainer=[]; // for "undefined" type only
     if (currentContainer is! List)
-      throw "not a list $key";
-    */  
+      throw new UnsupportedError("attribute $key is not a List");
+      
   }
 
 

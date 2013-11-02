@@ -27,13 +27,11 @@ class Media {
   String player;
   String copyright;
   //asis+
-  String toString() => "Tetsing asis: Media object";
+  String toString() => "Testing asis: Media object";
   String testAsIs() {
     return "Media";
   }
-  noSuchAttribute(key, isSetter, value) {
-    print("attempt to access $key");
-  }
+
   //asis-
 }
 @Prototype

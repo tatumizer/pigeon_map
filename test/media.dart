@@ -57,13 +57,11 @@ class Media extends PigeonStruct {
   int get width => getValue(10);
   void set width(int val) => setValue(10,val);
 
-  String toString() => "Tetsing asis: Media object";
+  String toString() => "Testing asis: Media object";
   String testAsIs() {
     return "Media";
   }
-  noSuchAttribute(key, isSetter, value) {
-    print("attempt to access $key");
-  }
+
   
 }
 class Image extends PigeonStruct {

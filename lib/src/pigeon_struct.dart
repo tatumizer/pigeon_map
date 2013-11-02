@@ -28,8 +28,7 @@ class PigeonStructMetadata extends NameSet {
     this.type=info["type"];
     slotTypes=new PigeonMap(this);
     info["attributes"].forEach((a)=>slotTypes[a["name"]] = a["type"]);
-    if (!isFast)
-      print("this Pigeon is defective");
+    //if (!isFast) print("this Pigeon is slow!");
     _computePigeonsonTypes();
   }
   _computePigeonsonTypes() {

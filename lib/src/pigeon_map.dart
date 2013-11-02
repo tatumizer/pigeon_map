@@ -1,5 +1,16 @@
 part of pigeon;
 
+class _PigeonMapInvocation extends Invocation {
+  static final _emptyMap = {};
+  var _memberName, _positionalArguments;
+  _PigeonMapInvocation(this._memberName, this._positionalArguments);
+  final isMethod=false;
+  bool get isGetter => _positionalArguments.length==0; 
+  bool get isSetter => _positionalArguments.length>0;
+  Symbol get memberName => _memberName; 
+  Map<Symbol, dynamic> get namedArguments => _emptyMap; 
+  List get positionalArguments => _positionalArguments;
+}
 
 class NameSet {
   static const int _LINEAR = 0, _BINARY = 1, _HASH = 2;
@@ -78,6 +89,7 @@ class NameSet {
   List<String> get names => _names;
   int get length => _names.length;
   bool get isFast => _table!=null;
+  bool contains(key) => _getIndex(key)!=-1;
   setSearchModeForTest (mode) => _searchMode = mode;
 }
 
@@ -102,14 +114,14 @@ class PigeonMap implements Map<String, dynamic> {
   get nameSet => _nameSet;
   operator []=(String key, dynamic v) {
     int n = _nameSet._getIndex(key);
-    if (n<0) return noSuchAttribute(key, true, v);
+    if (n<0) return noSuchAttribute(new _PigeonMapInvocation(new Symbol(key), [v]));
     _values[n] = v;
     _length=-1;
   }
 
   operator [](String key) {
     int n = _nameSet._getIndex(key);
-    if (n<0) return noSuchAttribute(key, false, null);
+    if (n<0) return noSuchAttribute(new _PigeonMapInvocation(new Symbol(key), []));
     var v = _values[n];
     
     return identical(v, _undefined) ? null :v;
@@ -167,7 +179,7 @@ class PigeonMap implements Map<String, dynamic> {
   bool get isFast => _nameSet.isFast;
   putIfAbsent(String key, dynamic ifAbsent()) {
     int n = _nameSet._getIndex(key);
-    if (n<0) return noSuchAttribute(key, true, ifAbsent());
+    if (n<0) return noSuchAttribute(new _PigeonMapInvocation(new Symbol(key), [ifAbsent()]));
     var old=_values[n];
     if (identical(old, _undefined)) {
       _values[n] = ifAbsent();
@@ -193,7 +205,7 @@ class PigeonMap implements Map<String, dynamic> {
   }
 
   Iterable get values => _values.where((v) => !identical(v, _undefined));
-  noSuchAttribute(String key, bool isSetter, dynamic value) {
-    _keyError(key);
+  noSuchAttribute(Invocation inv) {
+    throw new ArgumentError("attribute not defined in NameSet: ${inv.memberName}");
   }
 }

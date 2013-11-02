@@ -2,6 +2,7 @@ import "package:unittest/unittest.dart";
 import "../lib/pigeon.dart";
 import "stuff.dart";
 import "dart:typed_data";
+
 init(List list, num initValue) {
   for (int i=0; i<list.length; i++)
     list[i]=initValue+i;
@@ -48,7 +49,17 @@ class StuffTest {
     checkAll(s, s2);
     expect(s["foo"]="bar", equals("bar")); // strange dart feature
 
-    expect(s["foo"], equals("foo false null"));
+    expect(s["foo"], equals('Symbol("foo") false 0'));
+    var str= r'''{
+      "x": 42.0,
+      "undeclaredMapForTest": { "a": 1, "b":[1,2], "c":3 },
+      "undeclaredAttributeForTest": "abcdef",
+      "undeclaredListForTest": [ 1,2, {"a": 0, "b": 1}, 3],
+      "i":42
+    }''';
+    var s3=new Stuff.parseJsonString(str);
+    expect(s3.x, equals(42.0));
+    expect(s3.i, equals(42));
   }
 }
 
