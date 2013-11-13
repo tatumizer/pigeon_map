@@ -1,5 +1,7 @@
 Changelog
 =========
+- ver. 0.5.1 fixing stuff broken by new dart release ("script" doesn't return path as string)
+
 - ver. 0.5.0: 
 1. (BREAKING CHANGE) changed signature of noSuchAttribute: now I pass a single parameter (Invocation) to make noSuchAttribute more consistent with noSuchMethod 
 2. allow undeclared attributes of any kind (not only primitive types) to occur in JSON: when such attribute is encountered while parsing, library calls noSuchAttribute

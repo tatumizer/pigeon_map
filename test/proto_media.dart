@@ -7,7 +7,7 @@ class Message {
   Media media;
   List<Image> images;
   //asis+
-  String toString() => "Tetsing asis: Message object";
+  
   String testAsIs() {
     return "Message";
   }
@@ -27,7 +27,7 @@ class Media {
   String player;
   String copyright;
   //asis+
-  String toString() => "Testing asis: Media object";
+  
   String testAsIs() {
     return "Media";
   }
@@ -42,7 +42,7 @@ class Image {
   int height;
   String size;
   //asis+
-  String toString() => "Tetsing asis: Image object";
+  
   String testAsIs() {
     return "Image";
   }

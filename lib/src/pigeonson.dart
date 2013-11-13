@@ -28,7 +28,7 @@ class Pigeonson {
   var buf;
   int bufPos=0;
   int bufLength;
-  serialize(PigeonStruct map) {
+  serialize(/*PigeonStruct*/ map) { // there's a bug in checked mode, hence type commented out
     bufLength=1024;
     buf=new Uint8List(bufLength);
     bufPos=0;

@@ -15,7 +15,7 @@ String readSource(fileName) {
   return new File(fileName).readAsStringSync();
 }
 void writeSource(str) {
-  new File(Platform.script).writeAsStringSync(str);
+  new File(Platform.script.toFilePath()).writeAsStringSync(str);
 }
 class Slice {
   String str;
@@ -181,7 +181,7 @@ collectAsIsFragments(slice, asisSlices) {
   return sb.toString();
 }
 preprocess([String srcFileName]) {
-  if (srcFileName==null) srcFileName=Platform.script;
+  if (srcFileName==null) srcFileName=Platform.script.toFilePath();
   srcFileName=srcFileName.replaceAll("\\","/");
   String source=readSource(srcFileName);
   if (!source.startsWith("//>")) throw "first line should be //>destinationFileName";

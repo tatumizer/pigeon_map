@@ -1,4 +1,4 @@
-//generated from prototype file proto_media.dart
+//generated from prototype file C:/Users/Alex/Dropbox/pigeon_map/test/proto_media.dart
 
  import '../lib/pigeon.dart';
 final _media_pigeonTypeCatalog = {
@@ -22,7 +22,7 @@ class Message extends PigeonStruct {
   Media get media => getValue(1);
   void set media(Media val) => setValue(1,val);
 
-  String toString() => "Tetsing asis: Message object";
+  
   String testAsIs() {
     return "Message";
   }
@@ -57,7 +57,7 @@ class Media extends PigeonStruct {
   int get width => getValue(10);
   void set width(int val) => setValue(10,val);
 
-  String toString() => "Testing asis: Media object";
+  
   String testAsIs() {
     return "Media";
   }
@@ -81,7 +81,7 @@ class Image extends PigeonStruct {
   int get width => getValue(4);
   void set width(int val) => setValue(4,val);
 
-  String toString() => "Tetsing asis: Image object";
+  
   String testAsIs() {
     return "Image";
   }
